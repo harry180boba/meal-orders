@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>訂便當</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F5F3EE; --surface: #FDFCF8; --surface2: #EEEAE2; --border: #D8D3C8;
+  --text: #1A1814; --text2: #6B6660; --text3: #A09B94;
+  --accent: #C84B2F; --accent-light: #F5E8E4;
+  --green: #2A7A4B; --green-light: #E2F0E8;
+  --radius: 10px; --radius-lg: 16px;
+}
+body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
+
+/* HEADER */
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 18px 0; position: sticky; top: 0; z-index: 100; }
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.header-actions { display: flex; gap: 7px; }
+.btn-sm { border-radius: 8px; padding: 7px 13px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; transition: all .13s; border: 1px solid var(--border); }
+.btn-ghost { background: var(--surface2); color: var(--text2); }
+.btn-ghost:hover { background: var(--border); }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { opacity: .85; }
+
+.tab-nav { display: flex; }
+.tab-nav-btn { flex: 1; padding: 10px 8px 11px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text3); cursor: pointer; font-weight: 500; transition: all .13s; margin-bottom: -1px; }
+.tab-nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--surface2); color: var(--text2); font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 700; border-radius: 10px; padding: 1px 6px; margin-left: 5px; min-width: 18px; }
+.tab-nav-btn.active .tab-badge { background: var(--accent-light); color: var(--accent); }
+
+main { padding: 16px 14px; max-width: 720px; margin: 0 auto; }
+
+/* SECTION */
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 9px 2px; }
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--text3); font-family: 'DM Mono', monospace; text-transform: uppercase; }
+.section-total { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+/* CARDS */
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 8px; overflow: hidden; transition: box-shadow .15s; }
+.order-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+.card-main { display: flex; align-items: stretch; }
+.card-date { background: var(--surface2); padding: 13px 11px; min-width: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border); flex-shrink: 0; }
+.card-date.today-date { background: var(--accent-light); }
+.card-date .month { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+.card-date .day-num { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.card-date.today-date .day-num { color: var(--accent); }
+.card-date .weekday { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.card-body { flex: 1; padding: 11px 13px; min-width: 0; }
+.card-restaurant { font-size: 11px; color: var(--text3); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-item { font-size: 14px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
+.deadline-badge { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text3); }
+.deadline-badge.urgent { color: var(--accent); font-weight: 700; }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: 11px 11px 11px 6px; flex-shrink: 0; }
+.price-tag { font-size: 15px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.card-actions { display: flex; gap: 4px; }
+.btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text2); transition: all .12s; }
+.btn-icon:hover { background: var(--surface2); }
+.btn-icon.danger:hover { background: #FEE; color: var(--accent); border-color: var(--accent); }
+.note-items { border-top: 1px dashed var(--border); padding: 6px 13px 9px 69px; display: flex; flex-wrap: wrap; gap: 4px; }
+.note-chip { background: var(--surface2); border-radius: 20px; padding: 2px 8px; font-size: 11px; color: var(--text2); }
+.today-pill { display: inline-flex; align-items: center; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
+
+/* ── CALENDAR ── */
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-month-label { font-size: 16px; font-weight: 700; }
+.cal-nav { display: flex; gap: 6px; }
+.cal-nav-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+.cal-nav-btn:hover { background: var(--border); }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 16px; }
+.cal-dow { text-align: center; font-size: 11px; font-weight: 700; color: var(--text3); padding: 4px 0 6px; font-family: 'DM Mono', monospace; }
+.cal-cell { aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 5px 3px 3px; cursor: default; position: relative; min-height: 44px; }
+.cal-cell.has-order { background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: all .12s; }
+.cal-cell.has-order:hover { background: var(--accent-light); border-color: var(--accent); }
+.cal-cell.selected { background: var(--accent-light); border: 1.5px solid var(--accent); }
+.cal-cell.other-month { opacity: .3; }
+.cal-day { font-size: 13px; font-weight: 500; line-height: 1; }
+.cal-cell.has-order .cal-day { font-weight: 700; color: var(--accent); }
+.cal-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 3px; }
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: .6; }
+
+/* CALENDAR DETAIL */
+.cal-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 12px; animation: fadeIn .15s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:translateY(0) } }
+.cal-detail-head { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 10px; }
+.cal-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.cal-detail-item:last-child { border-bottom: none; }
+.cal-detail-name { font-size: 14px; font-weight: 500; }
+.cal-detail-rest { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.cal-detail-price { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; flex-shrink: 0; margin-left: 12px; }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; text-align: center; }
+.stat-num { font-size: 24px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--text3); }
+
+.restaurant-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 20px; }
+.restaurant-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+.restaurant-rank { font-size: 13px; font-weight: 700; color: var(--text3); font-family: 'DM Mono', monospace; min-width: 22px; }
+.restaurant-rank.top { color: var(--accent); }
+.restaurant-info { flex: 1; min-width: 0; }
+.restaurant-name { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.restaurant-count { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.restaurant-bar-wrap { width: 80px; flex-shrink: 0; }
+.restaurant-bar-bg { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
+.restaurant-bar-fill { background: var(--accent); height: 100%; border-radius: 4px; transition: width .4s ease; }
+.restaurant-spend { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text2); min-width: 52px; text-align: right; flex-shrink: 0; }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text3); }
+.empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+/* MODALS */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.45); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 460px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); }
+.modal-header { padding: 17px 17px 0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-body { padding: 0 17px 17px; }
+.modal-footer { display: flex; gap: 8px; padding: 11px 17px; border-top: 1px solid var(--border); }
+.btn-cancel { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text2); cursor: pointer; }
+.btn-save { flex: 2; background: var(--accent); border: none; border-radius: 8px; padding: 9px; font-size: 14px; font-family: inherit; font-weight: 700; color: #fff; cursor: pointer; }
+.btn-save:hover { opacity: .88; }
+.btn-save:disabled { opacity: .5; }
+
+.field { margin-bottom: 11px; }
+.field label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 4px; }
+.field input, .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 11px; font-size: 14px; font-family: inherit; color: var(--text); outline: none; transition: border-color .12s; }
+.field input:focus, .field textarea:focus { border-color: var(--accent); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.note-entry { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+.note-entry input { flex: 1; }
+.note-entry input.price-input { max-width: 80px; font-family: 'DM Mono', monospace; }
+.btn-note-add { background: var(--surface2); border: 1px dashed var(--border); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--text2); cursor: pointer; width: 100%; font-family: inherit; }
+.btn-note-add:hover { background: var(--green-light); color: var(--green); border-color: var(--green); }
+
+.import-textarea { width: 100%; min-height: 180px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; font-family: 'DM Mono', monospace; color: var(--text); outline: none; resize: vertical; line-height: 1.7; }
+.import-textarea:focus { border-color: var(--accent); }
+.import-hint { font-size: 12px; color: var(--text3); margin-top: 7px; line-height: 1.7; }
+.btn-parse { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); cursor: pointer; margin-top: 9px; }
+.btn-parse:hover { background: var(--border); }
+.preview-label { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 7px; }
+.preview-card { background: var(--green-light); border: 1px solid #b8dfc6; border-radius: var(--radius); padding: 9px 13px; margin-bottom: 5px; font-size: 13px; }
+.preview-card .p-head { font-weight: 700; margin-bottom: 2px; }
+.preview-card .p-sub { color: var(--text2); font-size: 12px; }
+.preview-error { background: var(--accent-light); border: 1px solid #e8b8b0; border-radius: var(--radius); padding: 9px 13px; font-size: 13px; color: var(--accent); margin-bottom: 5px; }
+.itab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 13px; }
+.itab { flex: 1; padding: 8px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text2); cursor: pointer; font-weight: 500; margin-bottom: -1px; }
+.itab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 300; transition: transform .25s ease; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">🍱 訂便當</div>
+    <div class="header-actions">
+      <button class="btn-sm btn-ghost" onclick="openImport()">📋 匯入</button>
+      <button class="btn-sm btn-primary" onclick="openOrderModal()">＋ 新增</button>
+    </div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-nav-btn active" id="tabUpcoming" onclick="switchMainTab('upcoming')">即將到來 <span class="tab-badge" id="badgeUpcoming">0</span></button>
+    <button class="tab-nav-btn" id="tabCalendar" onclick="switchMainTab('calendar')">月曆 <span class="tab-badge" id="badgeCalendar">歷史</span></button>
+    <button class="tab-nav-btn" id="tabStats" onclick="switchMainTab('stats')">統計 <span class="tab-badge" id="badgeStats">店家</span></button>
+  </div>
+</header>
+
+<main>
+  <div id="upcomingPane"></div>
+  <div id="calendarPane" style="display:none"></div>
+  <div id="statsPane" style="display:none"></div>
+</main>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="orderModalTitle">新增訂單</div>
+      <button class="btn-icon" onclick="closeOrderModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><label>用餐日期</label><input type="date" id="f_meal_date"></div>
+        <div class="field"><label>截止時間</label><input type="datetime-local" id="f_deadline"></div>
+      </div>
+      <div class="field"><label>餐廳名稱</label><input type="text" id="f_restaurant" placeholder="例：港星燒臘便當店"></div>
+      <div class="field"><label>餐點名稱</label><input type="text" id="f_item" placeholder="例：蒲燒鯛魚（半飯）"></div>
+      <div class="field"><label>金額（元）</label><input type="number" id="f_price" placeholder="90" min="0" style="max-width:120px"></div>
+      <div class="field">
+        <label>細項明細（選填）</label>
+        <div id="noteEntries"></div>
+        <button class="btn-note-add" onclick="addNoteEntry()">＋ 新增細項</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeOrderModal()">取消</button>
+      <button class="btn-save" onclick="saveOrder()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 貼上訂單匯入</div>
+      <button class="btn-icon" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="itab-row">
+        <button class="itab active" id="itabPaste" onclick="switchImportTab('paste')">貼上文字</button>
+        <button class="itab" id="itabPreview" onclick="switchImportTab('preview')">預覽結果</button>
+      </div>
+      <div id="ipanePaste">
+        <textarea class="import-textarea" id="importText" placeholder="將訂單明細文字貼在這裡…
+
+範例：
+05/07 (週四)客樂美食| 5/11 便當
+酥炸雞腿飯	105		×	1	105
+截止於 (05/11 週一 09:30)"></textarea>
+        <p class="import-hint">支援從訂餐平台複製的「訂單明細」格式，可一次貼入多筆</p>
+        <button class="btn-parse" onclick="parseAndPreview()">🔍 解析預覽</button>
+      </div>
+      <div id="ipanePreview" style="display:none"><div id="previewContent"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeImport()">取消</button>
+      <button class="btn-save" id="btnConfirmImport" onclick="confirmImport()" disabled>匯入訂單</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WD = ['日','一','二','三','四','五','六'];
+let orders = JSON.parse(localStorage.getItem('meal_orders') || '[]');
+let editingId = null, parsedOrders = [];
+let calYear, calMonth, calSelected = null;
+
+// seed
+if (!orders.length) {
+  orders = [
+    {id:uid(),meal_date:'2026-05-25',deadline:'2026-05-25T09:30',restaurant:'港星燒臘便當店',item:'蒲燒鯛魚（半飯）',price:105,notes:[]},
+    {id:uid(),meal_date:'2026-05-26',deadline:'2026-05-25T17:30',restaurant:'真好味火鍋',item:'泡菜鍋燒意麵',price:85,notes:[]},
+    {id:uid(),meal_date:'2026-05-27',deadline:'2026-05-27T09:10',restaurant:'胖起來朝午販賣所',item:'秘漬燒肉蛋吐司 + 薯餅',price:95,notes:[{item:'秘漬燒肉蛋吐司',price:75},{item:'薯餅',price:20}]},
+    {id:uid(),meal_date:'2026-05-28',deadline:'2026-05-27T17:30',restaurant:'星月脆皮雞排-午餐版',item:'百頁豆腐＋米血＋韭菜水餃',price:105,notes:[{item:'百頁豆腐（胡椒）',price:20},{item:'米血（胡椒）',price:20},{item:'韭菜水餃（10顆）',price:65}]},
+    {id:uid(),meal_date:'2026-05-29',deadline:'2026-05-29T09:30',restaurant:'金旺炒麵',item:'泡菜肉絲蛋炒飯（茄汁）',price:90,notes:[]},
+    {id:uid(),meal_date:'2026-05-20',deadline:'2026-05-20T09:00',restaurant:'福氣便當',item:'排骨飯',price:90,notes:[]},
+    {id:uid(),meal_date:'2026-05-19',deadline:'2026-05-19T09:00',restaurant:'大橋頭麵食',item:'乾麵＋貢丸湯',price:75,notes:[{item:'乾麵',price:50},{item:'貢丸湯',price:25}]},
+    {id:uid(),meal_date:'2026-05-13',deadline:'2026-05-13T09:00',restaurant:'港星燒臘便當店',item:'叉燒飯',price:100,notes:[]},
+    {id:uid(),meal_date:'2026-05-07',deadline:'2026-05-07T09:00',restaurant:'真好味火鍋',item:'牛肉麵',price:95,notes:[]},
+    {id:uid(),meal_date:'2026-04-28',deadline:'2026-04-28T09:00',restaurant:'金旺炒麵',item:'蛋炒飯',price:80,notes:[]},
+    {id:uid(),meal_date:'2026-04-22',deadline:'2026-04-22T09:00',restaurant:'港星燒臘便當店',item:'蒲燒鯛魚飯',price:105,notes:[]},
+    {id:uid(),meal_date:'2026-04-15',deadline:'2026-04-15T09:00',restaurant:'胖起來朝午販賣所',item:'燒肉蛋吐司',price:75,notes:[]},
+  ];
+  save();
+}
+
+const now = new Date();
+calYear = now.getFullYear();
+calMonth = now.getMonth(); // 0-indexed
+
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function save() { localStorage.setItem('meal_orders', JSON.stringify(orders)); }
+function todayStr() { return fmtDate(new Date()); }
+function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── TABS ──────────────────────────────────────────────────
+function switchMainTab(tab) {
+  ['upcoming','calendar','stats'].forEach(t => {
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
+    document.getElementById(t+'Pane').style.display = t===tab ? '' : 'none';
+  });
+  if (tab==='calendar') renderCalendar();
+  if (tab==='stats') renderStats();
+}
+
+// ── UPCOMING ─────────────────────────────────────────────
+function renderUpcoming() {
+  const today = todayStr();
+  const upcoming = orders.filter(o=>o.meal_date>=today).sort((a,b)=>a.meal_date.localeCompare(b.meal_date));
+  document.getElementById('badgeUpcoming').textContent = upcoming.length;
+
+  const pane = document.getElementById('upcomingPane');
+  if (!upcoming.length) { pane.innerHTML=`<div class="empty-state"><div class="empty-icon">🗓</div><p>沒有即將到來的訂單</p></div>`; return; }
+
+  const sections = [];
+  let cur = null;
+  upcoming.forEach(o => {
+    const sec = getSectionLabel(o.meal_date, today);
+    if (!cur || cur.label!==sec) { if(cur)sections.push(cur); cur={label:sec,items:[],total:0}; }
+    cur.items.push(o); cur.total+=o.price;
+  });
+  if(cur) sections.push(cur);
+
+  let html='';
+  sections.forEach(sec=>{
+    html+=`<div class="section-head"><div class="section-label">${sec.label}</div><div class="section-total">NT$${sec.total}</div></div>`;
+    sec.items.forEach(o=>{ html+=renderCard(o,today); });
+  });
+  pane.innerHTML=html;
+}
+
+function getSectionLabel(dateStr, today) {
+  const d=new Date(dateStr+'T12:00'), t=new Date(today+'T12:00');
+  const diff=Math.round((d-t)/86400000);
+  if(dateStr===today) return '今天';
+  if(diff===1) return '明天';
+  const mon=new Date(t); mon.setDate(t.getDate()-((t.getDay()||7)-1));
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  if(d>=mon&&d<=sun) return '本週';
+  const nm=new Date(mon); nm.setDate(mon.getDate()+7);
+  const ns=new Date(nm); ns.setDate(nm.getDate()+6);
+  if(d>=nm&&d<=ns) return '下週';
+  return `${d.getFullYear()}年${d.getMonth()+1}月`;
+}
+
+function renderCard(o, today, dim) {
+  const d=new Date(o.meal_date+'T12:00');
+  const isToday=o.meal_date===today;
+  let dlStr='', urgent=false;
+  if(o.deadline){
+    const dl=new Date(o.deadline);
+    urgent=!dim&&(dl-new Date())<3*3600000&&dl>new Date();
+    dlStr=`${dl.getMonth()+1}/${dl.getDate()} ${String(dl.getHours()).padStart(2,'0')}:${String(dl.getMinutes()).padStart(2,'0')} 截止`;
+  }
+  const noteChips=o.notes.length?`<div class="note-items">${o.notes.map(n=>`<span class="note-chip">${escHtml(n.item)}・$${n.price}</span>`).join('')}</div>`:'';
+  const todayPill=isToday?`<span class="today-pill">今天</span>`:'';
+  return `<div class="order-card${dim?' past':''}">
+    <div class="card-main">
+      <div class="card-date${isToday?' today-date':''}">
+        <div class="month">${d.getMonth()+1}月</div>
+        <div class="day-num">${d.getDate()}</div>
+        <div class="weekday">週${WD[d.getDay()]}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-restaurant">${escHtml(o.restaurant)}${todayPill}</div>
+        <div class="card-item">${escHtml(o.item)}</div>
+        ${dlStr?`<div class="deadline-badge${urgent?' urgent':''}">⏰ ${dlStr}</div>`:''}
+      </div>
+      <div class="card-right">
+        <div class="price-tag">$${o.price}</div>
+        <div class="card-actions">
+          <button class="btn-icon" onclick="openOrderModal('${o.id}')">✏️</button>
+          <button class="btn-icon danger" onclick="deleteOrder('${o.id}')">🗑</button>
+        </div>
+      </div>
+    </div>${noteChips}</div>`;
+}
+
+// ── CALENDAR ─────────────────────────────────────────────
+function renderCalendar() {
+  const pane = document.getElementById('calendarPane');
+  const today = todayStr();
+
+  // build date→orders map
+  const byDate = {};
+  orders.forEach(o => {
+    if(!byDate[o.meal_date]) byDate[o.meal_date]=[]; byDate[o.meal_date].push(o);
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay  = new Date(calYear, calMonth+1, 0);
+  const startDow = (firstDay.getDay()+6)%7; // Mon=0
+  const totalCells = Math.ceil((startDow + lastDay.getDate()) / 7) * 7;
+
+  const monthName = `${calYear}年${calMonth+1}月`;
+
+  let gridHTML = '';
+  ['一','二','三','四','五','六','日'].forEach(d => { gridHTML+=`<div class="cal-dow">${d}</div>`; });
+
+  for(let i=0; i<totalCells; i++){
+    const dayOffset = i - startDow;
+    const cellDate = new Date(calYear, calMonth, dayOffset+1);
+    const dateStr = fmtDate(cellDate);
+    const isThisMonth = cellDate.getMonth()===calMonth;
+    const hasOrder = byDate[dateStr] && byDate[dateStr].length>0;
+    const isSel = calSelected===dateStr;
+    const classes = ['cal-cell', !isThisMonth&&'other-month', hasOrder&&'has-order', isSel&&'selected'].filter(Boolean).join(' ');
+    const dots = hasOrder ? `<div class="cal-dots">${byDate[dateStr].slice(0,3).map(()=>'<div class="cal-dot"></div>').join('')}</div>` : '';
+    const click = hasOrder ? `onclick="selectCalDate('${dateStr}')"` : '';
+    gridHTML+=`<div class="${classes}" ${click}><div class="cal-day">${cellDate.getDate()}</div>${dots}</div>`;
+  }
+
+  // detail panel
+  let detailHTML = '';
+  if(calSelected && byDate[calSelected]){
+    const d=new Date(calSelected+'T12:00');
+    const dayOrders=byDate[calSelected];
+    const dayTotal=dayOrders.reduce((s,o)=>s+o.price,0);
+    detailHTML=`<div class="cal-detail">
+      <div class="cal-detail-head">${d.getMonth()+1}月${d.getDate()}日 週${WD[d.getDay()]}・NT$${dayTotal}</div>
+      ${dayOrders.map(o=>`<div class="cal-detail-item">
+        <div><div class="cal-detail-name">${escHtml(o.item)}</div><div class="cal-detail-rest">${escHtml(o.restaurant)}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="cal-detail-price">$${o.price}</div>
+          <button class="btn-icon" onclick="openOrderModal('${o.id}')">✏️</button>
+          <button class="btn-icon danger" onclick="deleteOrder('${o.id}');renderCalendar()">🗑</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  pane.innerHTML=`
+    <div class="cal-header">
+      <div class="cal-month-label">${monthName}</div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+        <button class="cal-nav-btn" onclick="calNavToday()">今</button>
+        <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-grid">${gridHTML}</div>
+    ${detailHTML}
+  `;
+}
+
+function selectCalDate(dateStr){
+  calSelected = calSelected===dateStr ? null : dateStr;
+  renderCalendar();
+}
+function calNav(dir){
+  calMonth+=dir;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
+  calSelected=null; renderCalendar();
+}
+function calNavToday(){
+  const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth();
+  calSelected=null; renderCalendar();
+}
+
+// ── STATS ────────────────────────────────────────────────
+function renderStats() {
+  const pane = document.getElementById('statsPane');
+  const past = orders.filter(o=>o.meal_date<=todayStr());
+  if(!past.length){ pane.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><p>還沒有歷史資料</p></div>`; return; }
+
+  const total = past.reduce((s,o)=>s+o.price,0);
+  const avg   = Math.round(total/past.length);
+
+  // restaurant stats
+  const rMap={};
+  past.forEach(o=>{
+    if(!rMap[o.restaurant]) rMap[o.restaurant]={count:0,spend:0};
+    rMap[o.restaurant].count++; rMap[o.restaurant].spend+=o.price;
+  });
+  const rList = Object.entries(rMap).sort((a,b)=>b[1].count-a[1].count);
+  const maxCount = rList[0][1].count;
+
+  let html=`
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num">${past.length}</div><div class="stat-label">歷史訂單</div></div>
+      <div class="stat-card"><div class="stat-num">${rList.length}</div><div class="stat-label">去過店家</div></div>
+      <div class="stat-card"><div class="stat-num">${avg}</div><div class="stat-label">平均每餐 NT$</div></div>
+    </div>
+    <div class="section-head" style="margin-top:4px"><div class="section-label">常去店家排行</div><div class="section-total">共 ${rList.length} 間</div></div>
+    <div class="restaurant-list">`;
+
+  rList.forEach(([name,{count,spend}],i)=>{
+    const pct = Math.round(count/maxCount*100);
+    const isTop = i<3;
+    const rankLabel = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+    html+=`<div class="restaurant-row">
+      <div class="restaurant-rank${isTop?' top':''}">${rankLabel}</div>
+      <div class="restaurant-info">
+        <div class="restaurant-name">${escHtml(name)}</div>
+        <div class="restaurant-count">訂過 ${count} 次</div>
+      </div>
+      <div class="restaurant-bar-wrap">
+        <div class="restaurant-bar-bg"><div class="restaurant-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="restaurant-spend">NT$${spend}</div>
+    </div>`;
+  });
+  html+='</div>';
+  pane.innerHTML=html;
+}
+
+// ── RENDER ALL ────────────────────────────────────────────
+function render(){
+  renderUpcoming();
+  // lazy: only re-render visible tab
+  const activeTab = document.querySelector('.tab-nav-btn.active').id.replace('tab','').toLowerCase();
+  if(activeTab==='calendar') renderCalendar();
+  if(activeTab==='stats') renderStats();
+}
+
+// ── IMPORT ───────────────────────────────────────────────
+function parseOrderText(raw){
+  const results=[],errors=[];
+  const text=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+  if(!text) return{results,errors};
+  const blocks=text.split(/(?=\d{1,2}\/\d{1,2}\s*[（(]週[一二三四五六日][）)][^\n]*\|)/g).map(b=>b.trim()).filter(Boolean);
+  if(!blocks.length){errors.push('找不到可辨識的訂單格式');return{results,errors};}
+  const y=new Date().getFullYear();
+  for(const block of blocks){
+    try{
+      const lines=block.split('\n').map(l=>l.trim()).filter(Boolean);
+      const hm=lines[0].match(/(\d{1,2})\/(\d{1,2})\s*[（(]週[一二三四五六日][）)]\s*(.+?)\|\s*(\d{1,2})\/(\d{1,2})/);
+      if(!hm){errors.push(`無法解析：「${lines[0].slice(0,30)}」`);continue;}
+      const restaurant=hm[3].trim();
+      const mealDate=`${y}-${String(parseInt(hm[4])).padStart(2,'0')}-${String(parseInt(hm[5])).padStart(2,'0')}`;
+      let deadline='';
+      const dlLine=lines.find(l=>l.includes('截止於')||l.includes('截止:'));
+      if(dlLine){const dm=dlLine.match(/(\d{1,2})\/(\d{1,2})\s*週[一二三四五六日]\s*(\d{2}:\d{2})/);if(dm)deadline=`${y}-${String(parseInt(dm[1])).padStart(2,'0')}-${String(parseInt(dm[2])).padStart(2,'0')}T${dm[3]}`;}
+      const notes=[];let mainItem='',totalPrice=0;
+      const itemLines=lines.filter(l=>!/^\d{1,2}\/\d{1,2}/.test(l)&&!/^(Total|評比|截止|訂單明細)/.test(l)&&/\d+\s*$/.test(l)&&l.length>2);
+      for(const il of itemLines){
+        const parts=il.split(/\t+/).map(p=>p.trim()).filter(Boolean);if(!parts.length)continue;
+        const name=parts[0];const nums=il.match(/\d+/g);if(!nums)continue;
+        const price=parseInt(nums[nums.length-1]);notes.push({item:name,price});totalPrice+=price;
+        mainItem=mainItem?mainItem+' + '+name:name;
+      }
+      if(!mainItem){errors.push(`「${restaurant}」找不到餐點`);continue;}
+      results.push({id:uid(),meal_date:mealDate,deadline,restaurant,item:mainItem,price:totalPrice,notes:notes.length>1?notes:[]});
+    }catch(e){errors.push(`解析錯誤：${e.message}`);}
+  }
+  return{results,errors};
+}
+
+function openImport(){
+  document.getElementById('importText').value='';
+  document.getElementById('previewContent').innerHTML='';
+  document.getElementById('btnConfirmImport').disabled=true;
+  parsedOrders=[];
+  switchImportTab('paste');
+  document.getElementById('importModal').classList.add('open');
+}
+function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
+function switchImportTab(tab){
+  document.getElementById('itabPaste').classList.toggle('active',tab==='paste');
+  document.getElementById('itabPreview').classList.toggle('active',tab==='preview');
+  document.getElementById('ipanePaste').style.display=tab==='paste'?'':'none';
+  document.getElementById('ipanePreview').style.display=tab==='preview'?'':'none';
+}
+function parseAndPreview(){
+  const raw=document.getElementById('importText').value;
+  if(!raw.trim()){showToast('請先貼上訂單文字');return;}
+  const{results,errors}=parseOrderText(raw);parsedOrders=results;
+  let html='';
+  errors.forEach(e=>{html+=`<div class="preview-error">⚠️ ${escHtml(e)}</div>`;});
+  if(!results.length&&!errors.length) html='<div class="preview-error">⚠️ 找不到可辨識的訂單</div>';
+  if(results.length){
+    html+=`<div class="preview-label">✓ 成功解析 ${results.length} 筆訂單</div>`;
+    results.forEach(o=>{const d=new Date(o.meal_date+'T12:00');const dl=o.deadline?(()=>{const x=new Date(o.deadline);return`截止 ${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`;})():'（無截止時間）';html+=`<div class="preview-card"><div class="p-head">${d.getMonth()+1}/${d.getDate()} 週${WD[d.getDay()]}　${escHtml(o.restaurant)}</div><div class="p-sub">${escHtml(o.item)}　NT$${o.price}　${dl}</div></div>`;});
+  }
+  document.getElementById('previewContent').innerHTML=html;
+  switchImportTab('preview');
+  document.getElementById('btnConfirmImport').disabled=!results.length;
+}
+function confirmImport(){
+  if(!parsedOrders.length)return;
+  orders.push(...parsedOrders);save();render();closeImport();
+  showToast(`已匯入 ${parsedOrders.length} 筆訂單 ✓`);
+}
+
+// ── ORDER MODAL ───────────────────────────────────────────
+function openOrderModal(id){
+  editingId=id||null;
+  document.getElementById('orderModalTitle').textContent=id?'編輯訂單':'新增訂單';
+  document.getElementById('noteEntries').innerHTML='';
+  if(id){
+    const o=orders.find(x=>x.id===id);
+    document.getElementById('f_meal_date').value=o.meal_date;
+    document.getElementById('f_deadline').value=o.deadline||'';
+    document.getElementById('f_restaurant').value=o.restaurant;
+    document.getElementById('f_item').value=o.item;
+    document.getElementById('f_price').value=o.price;
+    o.notes.forEach(n=>addNoteEntry(n.item,n.price));
+  } else {
+    ['f_meal_date','f_deadline','f_restaurant','f_item','f_price'].forEach(i=>document.getElementById(i).value='');
+  }
+  document.getElementById('orderModal').classList.add('open');
+}
+function closeOrderModal(){ document.getElementById('orderModal').classList.remove('open'); }
+function addNoteEntry(iv,pv){
+  const div=document.createElement('div');div.className='note-entry';
+  div.innerHTML=`<input type="text" placeholder="品項名稱" value="${escHtml(iv||'')}"><input type="number" class="price-input" placeholder="金額" min="0" value="${pv||''}"><button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('noteEntries').appendChild(div);
+}
+function saveOrder(){
+  const meal_date=document.getElementById('f_meal_date').value;
+  const deadline=document.getElementById('f_deadline').value;
+  const restaurant=document.getElementById('f_restaurant').value.trim();
+  const item=document.getElementById('f_item').value.trim();
+  const price=parseInt(document.getElementById('f_price').value)||0;
+  if(!meal_date||!restaurant||!item){showToast('請填寫日期、餐廳和餐點');return;}
+  const notes=[];
+  document.querySelectorAll('.note-entry').forEach(row=>{
+    const[a,b]=row.querySelectorAll('input');
+    if(a.value.trim())notes.push({item:a.value.trim(),price:parseInt(b.value)||0});
+  });
+  if(editingId){
+    const idx=orders.findIndex(o=>o.id===editingId);
+    orders[idx]={...orders[idx],meal_date,deadline,restaurant,item,price,notes};
+    showToast('已更新 ✓');
+  } else {
+    orders.push({id:uid(),meal_date,deadline,restaurant,item,price,notes});
+    showToast('已新增 ✓');
+  }
+  save();render();closeOrderModal();
+}
+function deleteOrder(id){
+  if(!confirm('確定要刪除？'))return;
+  orders=orders.filter(o=>o.id!==id);save();render();showToast('已刪除');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+[document.getElementById('orderModal'),document.getElementById('importModal')].forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+});
+
+render();
+</script>
+</body>
+</html>
