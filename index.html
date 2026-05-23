@@ -30,29 +30,28 @@ body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: va
 .login-btn:hover { opacity: .88; }
 .login-btn:disabled { opacity: .5; cursor: default; }
 .login-error { font-size: 13px; color: var(--accent); text-align: center; margin-top: 12px; min-height: 20px; }
-.login-spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+.login-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* MAIN APP */
+/* APP */
 #app { display: none; padding-bottom: 80px; }
 header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 18px 0; position: sticky; top: 0; z-index: 100; }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .logo { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); display: inline-block; }
+.sync-dot.ok { background: #2A7A4B; }
+.sync-dot.loading { background: #E8A020; animation: pulse .8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
 .user-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
 .user-pill strong { color: var(--text); font-family: 'DM Mono', monospace; }
 .btn-logout { background: none; border: none; font-size: 11px; color: var(--text3); cursor: pointer; padding: 0; text-decoration: underline; }
 .btn-logout:hover { color: var(--accent); }
-.header-actions { display: flex; gap: 7px; }
+.header-actions { display: flex; gap: 7px; align-items: center; }
 .btn-sm { border-radius: 8px; padding: 6px 12px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; transition: all .13s; border: 1px solid var(--border); }
 .btn-ghost { background: var(--surface2); color: var(--text2); }
 .btn-ghost:hover { background: var(--border); }
 .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn-primary:hover { opacity: .85; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); display: inline-block; margin-left: 4px; }
-.sync-dot.ok { background: #2A7A4B; }
-.sync-dot.loading { background: #E8A020; animation: pulse .8s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-
 .tab-nav { display: flex; }
 .tab-nav-btn { flex: 1; padding: 9px 8px 10px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text3); cursor: pointer; font-weight: 500; transition: all .13s; margin-bottom: -1px; }
 .tab-nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -166,35 +165,31 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
 .itab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
 .itab { flex: 1; padding: 7px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text2); cursor: pointer; font-weight: 500; margin-bottom: -1px; }
 .itab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 300; transition: transform .25s ease; pointer-events: none; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ── -->
+<!-- LOGIN -->
 <div id="loginScreen" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">🍱</div>
     <div class="login-title">訂便當</div>
     <div class="login-sub">請輸入工號登入</div>
     <label class="login-label" for="empIdInput">工號</label>
-    <input class="login-input" id="empIdInput" type="text" placeholder="例：A001" autocomplete="off" autocapitalize="characters" maxlength="20">
+    <input class="login-input" id="empIdInput" type="text" placeholder="例：23018" autocomplete="off" autocapitalize="characters" maxlength="20">
     <button class="login-btn" id="loginBtn" onclick="doLogin()">登入</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<!-- ── MAIN APP ── -->
+<!-- APP -->
 <div id="app">
   <header>
     <div class="header-top">
-      <div class="logo">
-        🍱 訂便當
-        <span class="sync-dot" id="syncDot"></span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div class="logo">🍱 訂便當 <span class="sync-dot" id="syncDot"></span></div>
+      <div class="header-actions">
         <div class="user-pill">
           <strong id="userLabel">—</strong>
           <button class="btn-logout" onclick="doLogout()">登出</button>
@@ -274,18 +269,16 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, onSnapshot, addDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, doc, getDoc, setDoc, addDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 // ── 填入你的 Firebase Config ──────────────────────────────
 const FIREBASE_CONFIG = {
-   apiKey: "AIzaSyDA2ELXWa3HfbzlQQCBT2-oOjaIO19dUbE",
-  authDomain: "meal-orders-3b1e2.firebaseapp.com",
-  databaseURL: "https://meal-orders-3b1e2-default-rtdb.firebaseio.com",
-  projectId: "meal-orders-3b1e2",
-  storageBucket: "meal-orders-3b1e2.firebasestorage.app",
-  messagingSenderId: "433369816880",
-  appId: "1:433369816880:web:ea844994b7b26c424a72f5",
-  measurementId: "G-GKX1XG7YGG"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 // ─────────────────────────────────────────────────────────
 
@@ -297,15 +290,18 @@ let db, currentUser = null, unsubOrders = null;
 const nowD = new Date();
 calYear = nowD.getFullYear(); calMonth = nowD.getMonth();
 
-// ── INIT ─────────────────────────────────────────────────
 const app = initializeApp(FIREBASE_CONFIG);
 db = getFirestore(app);
 
-// Check session
-const saved = sessionStorage.getItem('emp_id');
-if (saved) showApp(saved);
+// 每個人自己的訂單子集合路徑
+function ordersCol() {
+  return collection(db, 'orders', currentUser, 'orders');
+}
 
-// Enter key on login
+// 恢復 session
+const savedId = sessionStorage.getItem('emp_id');
+if (savedId) showApp(savedId, sessionStorage.getItem('emp_name'));
+
 document.getElementById('empIdInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 // ── LOGIN ─────────────────────────────────────────────────
@@ -322,19 +318,23 @@ window.doLogin = async function() {
 
   try {
     const snap = await getDoc(doc(db, 'users', id));
-if (snap.exists()) {
-  // 已有帳號，直接登入
-  sessionStorage.setItem('emp_id', id);
-  sessionStorage.setItem('emp_name', snap.data().name || id);
-  showApp(id, snap.data().name);
-} else {
-  // 沒有帳號，自動建立
-  await setDoc(doc(db, 'users', id), { name: id, createdAt: new Date().toISOString() });
-  sessionStorage.setItem('emp_id', id);
-  sessionStorage.setItem('emp_name', id);
-  showApp(id, id);
-  showToast(`已建立新帳號 ${id} ✓`);
-}
+    if (snap.exists()) {
+      // 已有帳號
+      const name = snap.data().name || id;
+      sessionStorage.setItem('emp_id', id);
+      sessionStorage.setItem('emp_name', name);
+      showApp(id, name);
+    } else {
+      // 新帳號，自動建立
+      await setDoc(doc(db, 'users', id), {
+        name: id,
+        createdAt: new Date().toISOString()
+      });
+      sessionStorage.setItem('emp_id', id);
+      sessionStorage.setItem('emp_name', id);
+      showApp(id, id);
+      showToast(`歡迎！已建立帳號 ${id}`);
+    }
   } catch(e) {
     errEl.textContent = '連線失敗，請稍後再試';
     btn.disabled = false;
@@ -345,29 +345,30 @@ if (snap.exists()) {
 
 function showApp(empId, empName) {
   currentUser = empId;
-  const name = empName || sessionStorage.getItem('emp_name') || empId;
+  const name = empName || empId;
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  document.getElementById('userLabel').textContent = `${empId}${name && name !== empId ? ' ' + name : ''}`;
+  document.getElementById('userLabel').textContent = name !== empId ? `${empId} ${name}` : empId;
   startListening();
 }
 
 window.doLogout = function() {
   sessionStorage.clear();
   if (unsubOrders) { unsubOrders(); unsubOrders = null; }
-  orders = [];
+  orders = []; currentUser = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('empIdInput').value = '';
   document.getElementById('loginError').textContent = '';
-  document.getElementById('loginBtn').disabled = false;
-  document.getElementById('loginBtn').textContent = '登入';
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = false; btn.textContent = '登入';
 };
 
 // ── FIRESTORE ─────────────────────────────────────────────
 function startListening() {
   setSyncDot('loading');
-  unsubOrders = onSnapshot(collection(db, 'orders'), snap => {
+  // 只監聽這個人自己的訂單
+  unsubOrders = onSnapshot(ordersCol(), snap => {
     orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setSyncDot('ok');
     render();
@@ -376,14 +377,14 @@ function startListening() {
 
 async function addOrder(o) {
   const { id, ...data } = o;
-  await addDoc(collection(db, 'orders'), data);
+  await addDoc(ordersCol(), data);
 }
 async function updateOrder(o) {
   const { id, ...data } = o;
-  await setDoc(doc(db, 'orders', id), data);
+  await setDoc(doc(ordersCol(), id), data);
 }
 async function removeOrder(id) {
-  await deleteDoc(doc(db, 'orders', id));
+  await deleteDoc(doc(ordersCol(), id));
 }
 
 function setSyncDot(s) {
