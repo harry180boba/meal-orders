@@ -322,15 +322,19 @@ window.doLogin = async function() {
 
   try {
     const snap = await getDoc(doc(db, 'users', id));
-    if (snap.exists()) {
-      sessionStorage.setItem('emp_id', id);
-      sessionStorage.setItem('emp_name', snap.data().name || id);
-      showApp(id, snap.data().name);
-    } else {
-      errEl.textContent = `工號「${id}」不存在，請確認後再試`;
-      btn.disabled = false;
-      btn.textContent = '登入';
-    }
+if (snap.exists()) {
+  // 已有帳號，直接登入
+  sessionStorage.setItem('emp_id', id);
+  sessionStorage.setItem('emp_name', snap.data().name || id);
+  showApp(id, snap.data().name);
+} else {
+  // 沒有帳號，自動建立
+  await setDoc(doc(db, 'users', id), { name: id, createdAt: new Date().toISOString() });
+  sessionStorage.setItem('emp_id', id);
+  sessionStorage.setItem('emp_name', id);
+  showApp(id, id);
+  showToast(`已建立新帳號 ${id} ✓`);
+}
   } catch(e) {
     errEl.textContent = '連線失敗，請稍後再試';
     btn.disabled = false;
