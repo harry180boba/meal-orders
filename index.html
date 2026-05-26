@@ -23,35 +23,30 @@ body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: va
 .login-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 4px; }
 .login-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 28px; }
 .login-label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
-.login-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 18px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text); outline: none; text-align: center; letter-spacing: .12em; transition: border-color .15s; }
+.login-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 18px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text); outline: none; text-align: center; letter-spacing: .08em; transition: border-color .15s; }
 .login-input:focus { border-color: var(--accent); }
 .login-input::placeholder { font-size: 14px; letter-spacing: 0; font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }
 .login-btn { width: 100%; margin-top: 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); padding: 13px; font-size: 15px; font-family: inherit; font-weight: 700; cursor: pointer; transition: opacity .13s; }
 .login-btn:hover { opacity: .88; }
-.login-btn:disabled { opacity: .5; cursor: default; }
-.login-error { font-size: 13px; color: var(--accent); text-align: center; margin-top: 12px; min-height: 20px; }
-.login-spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.login-error { font-size: 13px; color: var(--accent); text-align: center; margin-top: 10px; min-height: 20px; }
 
-/* MAIN APP */
+/* APP */
 #app { display: none; padding-bottom: 80px; }
-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 18px 0; position: sticky; top: 0; z-index: 100; }
-.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.logo { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
-.user-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
-.user-pill strong { color: var(--text); font-family: 'DM Mono', monospace; }
-.btn-logout { background: none; border: none; font-size: 11px; color: var(--text3); cursor: pointer; padding: 0; text-decoration: underline; }
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px 0; position: sticky; top: 0; z-index: 100; }
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
+.logo { font-size: 17px; font-weight: 700; flex-shrink: 0; }
+.header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.user-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.user-pill strong { color: var(--text); }
+.btn-logout { background: none; border: none; font-size: 11px; color: var(--text3); cursor: pointer; text-decoration: underline; padding: 0; }
 .btn-logout:hover { color: var(--accent); }
-.header-actions { display: flex; gap: 7px; }
-.btn-sm { border-radius: 8px; padding: 6px 12px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; transition: all .13s; border: 1px solid var(--border); }
-.btn-ghost { background: var(--surface2); color: var(--text2); }
-.btn-ghost:hover { background: var(--border); }
-.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.btn-primary:hover { opacity: .85; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); display: inline-block; margin-left: 4px; }
-.sync-dot.ok { background: #2A7A4B; }
-.sync-dot.loading { background: #E8A020; animation: pulse .8s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+/* header icon buttons */
+.hbtn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 13px; font-family: inherit; cursor: pointer; color: var(--text2); transition: all .12s; white-space: nowrap; }
+.hbtn:hover { background: var(--border); }
+.hbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.hbtn.primary:hover { opacity: .85; }
+.hbtn.notif-on { background: var(--green-light); color: var(--green); border-color: #b8dfc6; }
 
 .tab-nav { display: flex; }
 .tab-nav-btn { flex: 1; padding: 9px 8px 10px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text3); cursor: pointer; font-weight: 500; transition: all .13s; margin-bottom: -1px; }
@@ -130,6 +125,26 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
 .restaurant-bar-fill { background: var(--accent); height: 100%; border-radius: 4px; }
 .restaurant-spend { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text2); min-width: 50px; text-align: right; flex-shrink: 0; }
 
+/* DATA DRAWER */
+.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.35); z-index: 150; }
+.drawer-overlay.open { display: block; }
+.drawer { position: fixed; top: 0; right: -360px; width: 340px; max-width: 92vw; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 160; transition: right .25s ease; padding: 24px 20px; overflow-y: auto; }
+.drawer.open { right: 0; }
+.drawer-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+.drawer-section { margin-bottom: 22px; }
+.drawer-section-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+.drawer-actions { display: flex; flex-direction: column; gap: 8px; }
+.drawer-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; font-family: inherit; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; transition: all .12s; }
+.drawer-btn:hover { background: var(--border); }
+.drawer-btn.danger { color: var(--accent); }
+.drawer-btn.danger:hover { background: var(--accent-light); border-color: var(--accent); }
+.drawer-btn.success { color: var(--green); }
+.drawer-btn.success:hover { background: var(--green-light); border-color: #b8dfc6; }
+.drawer-info { font-size: 12px; color: var(--text3); line-height: 1.7; background: var(--bg); border-radius: var(--radius); padding: 10px 12px; margin-top: 8px; }
+.notif-status { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); line-height: 1.6; }
+.notif-status.granted { background: var(--green-light); border-color: #b8dfc6; color: var(--green); }
+.notif-status.denied { background: var(--accent-light); border-color: #e8b8b0; color: var(--accent); }
+
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
 .empty-icon { font-size: 38px; margin-bottom: 10px; }
 
@@ -166,41 +181,39 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
 .itab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
 .itab { flex: 1; padding: 7px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text2); cursor: pointer; font-weight: 500; margin-bottom: -1px; }
 .itab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 300; transition: transform .25s ease; pointer-events: none; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ── -->
+<!-- LOGIN -->
 <div id="loginScreen" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">🍱</div>
     <div class="login-title">訂便當</div>
-    <div class="login-sub">請輸入工號登入</div>
-    <label class="login-label" for="empIdInput">工號</label>
-    <input class="login-input" id="empIdInput" type="text" placeholder="例：A001" autocomplete="off" autocapitalize="characters" maxlength="20">
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">登入</button>
+    <div class="login-sub">輸入你的名字或代號</div>
+    <label class="login-label" for="nameInput">名稱</label>
+    <input class="login-input" id="nameInput" type="text" placeholder="例：小明 / cole" autocomplete="off" maxlength="20">
+    <button class="login-btn" onclick="doLogin()">進入</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<!-- ── MAIN APP ── -->
+<!-- APP -->
 <div id="app">
   <header>
     <div class="header-top">
-      <div class="logo">
-        🍱 訂便當
-        <span class="sync-dot" id="syncDot"></span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div class="logo">🍱 訂便當</div>
+      <div class="header-right">
         <div class="user-pill">
           <strong id="userLabel">—</strong>
           <button class="btn-logout" onclick="doLogout()">登出</button>
         </div>
-        <button class="btn-sm btn-ghost" onclick="openImport()">📋</button>
-        <button class="btn-sm btn-primary" onclick="openOrderModal()">＋ 新增</button>
+        <button class="hbtn" id="notifBtn" onclick="toggleNotif()" title="每天8:30午餐提醒">🔔</button>
+        <button class="hbtn" onclick="openImport()" title="匯入訂單">📋</button>
+        <button class="hbtn" onclick="openDrawer()" title="資料管理">⚙️</button>
+        <button class="hbtn primary" onclick="openOrderModal()">＋ 新增</button>
       </div>
     </div>
     <div class="tab-nav">
@@ -214,6 +227,40 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
     <div id="calendarPane" style="display:none"></div>
     <div id="statsPane" style="display:none"></div>
   </main>
+</div>
+
+<!-- DATA DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-title">
+    ⚙️ 資料管理
+    <button class="btn-icon" onclick="closeDrawer()">✕</button>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-label">備份 / 還原</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn success" onclick="exportJson()">⬇ 匯出 data.json</button>
+      <button class="drawer-btn" onclick="document.getElementById('jsonFileInput').click()">⬆ 匯入 data.json</button>
+    </div>
+    <div class="drawer-info" id="dataInfo">載入中…</div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-label">🔔 每日提醒（08:30）</div>
+    <div class="notif-status" id="notifStatus">載入中…</div>
+    <div class="drawer-actions" style="margin-top:8px">
+      <button class="drawer-btn" id="notifDrawerBtn" onclick="toggleNotif()">開啟提醒</button>
+      <button class="drawer-btn" onclick="testNotif()">🧪 測試通知</button>
+    </div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-label">危險操作</div>
+    <div class="drawer-actions">
+      <button class="drawer-btn danger" onclick="clearAllData()">🗑 清除全部訂單</button>
+    </div>
+  </div>
 </div>
 
 <!-- ORDER MODAL -->
@@ -270,136 +317,227 @@ main { padding: 14px; max-width: 720px; margin: 0 auto; }
   </div>
 </div>
 
+<input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadJsonFile(event)">
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, onSnapshot, addDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-// ── 填入你的 Firebase Config ──────────────────────────────
-const FIREBASE_CONFIG = {
-   apiKey: "AIzaSyDA2ELXWa3HfbzlQQCBT2-oOjaIO19dUbE",
-  authDomain: "meal-orders-3b1e2.firebaseapp.com",
-  databaseURL: "https://meal-orders-3b1e2-default-rtdb.firebaseio.com",
-  projectId: "meal-orders-3b1e2",
-  storageBucket: "meal-orders-3b1e2.firebasestorage.app",
-  messagingSenderId: "433369816880",
-  appId: "1:433369816880:web:ea844994b7b26c424a72f5",
-  measurementId: "G-GKX1XG7YGG"
-};
-// ─────────────────────────────────────────────────────────
-
+<script>
 const WD = ['日','一','二','三','四','五','六'];
 let orders = [], editingId = null, parsedOrders = [];
 let calYear, calMonth, calSelected = null;
-let db, currentUser = null, unsubOrders = null;
+let currentUser = null;
+let notifTimer = null;
 
 const nowD = new Date();
 calYear = nowD.getFullYear(); calMonth = nowD.getMonth();
 
-// ── INIT ─────────────────────────────────────────────────
-const app = initializeApp(FIREBASE_CONFIG);
-db = getFirestore(app);
-
-// Check session
-const saved = sessionStorage.getItem('emp_id');
-if (saved) showApp(saved);
-
-// Enter key on login
-document.getElementById('empIdInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+function storageKey() { return `meal_orders_${currentUser}`; }
+function save() { localStorage.setItem(storageKey(), JSON.stringify(orders)); }
+function load() { orders = JSON.parse(localStorage.getItem(storageKey()) || '[]'); }
 
 // ── LOGIN ─────────────────────────────────────────────────
-window.doLogin = async function() {
-  const input = document.getElementById('empIdInput');
-  const id = input.value.trim().toUpperCase();
-  const errEl = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-  if (!id) { errEl.textContent = '請輸入工號'; return; }
+const savedUser = localStorage.getItem('meal_current_user');
+if (savedUser) { currentUser = savedUser; showApp(savedUser); }
+document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
-  btn.disabled = true;
-  btn.innerHTML = '<span class="login-spinner"></span>驗證中…';
-  errEl.textContent = '';
-
-  try {
-    const snap = await getDoc(doc(db, 'users', id));
-if (snap.exists()) {
-  // 已有帳號，直接登入
-  sessionStorage.setItem('emp_id', id);
-  sessionStorage.setItem('emp_name', snap.data().name || id);
-  showApp(id, snap.data().name);
-} else {
-  // 沒有帳號，自動建立
-  await setDoc(doc(db, 'users', id), { name: id, createdAt: new Date().toISOString() });
-  sessionStorage.setItem('emp_id', id);
-  sessionStorage.setItem('emp_name', id);
-  showApp(id, id);
-  showToast(`已建立新帳號 ${id} ✓`);
+function doLogin() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { document.getElementById('loginError').textContent = '請輸入名稱'; return; }
+  currentUser = name;
+  localStorage.setItem('meal_current_user', name);
+  showApp(name);
 }
-  } catch(e) {
-    errEl.textContent = '連線失敗，請稍後再試';
-    btn.disabled = false;
-    btn.textContent = '登入';
-    console.error(e);
-  }
-};
 
-function showApp(empId, empName) {
-  currentUser = empId;
-  const name = empName || sessionStorage.getItem('emp_name') || empId;
+function showApp(name) {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  document.getElementById('userLabel').textContent = `${empId}${name && name !== empId ? ' ' + name : ''}`;
-  startListening();
+  document.getElementById('userLabel').textContent = name;
+  load();
+  render();
+  updateNotifUI();
+  scheduleNotif();
 }
 
-window.doLogout = function() {
-  sessionStorage.clear();
-  if (unsubOrders) { unsubOrders(); unsubOrders = null; }
-  orders = [];
+function doLogout() {
+  localStorage.removeItem('meal_current_user');
+  currentUser = null; orders = [];
+  if(notifTimer) clearTimeout(notifTimer);
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('empIdInput').value = '';
+  document.getElementById('nameInput').value = '';
   document.getElementById('loginError').textContent = '';
-  document.getElementById('loginBtn').disabled = false;
-  document.getElementById('loginBtn').textContent = '登入';
-};
-
-// ── FIRESTORE ─────────────────────────────────────────────
-function startListening() {
-  setSyncDot('loading');
-  unsubOrders = onSnapshot(collection(db, 'orders'), snap => {
-    orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    setSyncDot('ok');
-    render();
-  }, err => { console.error(err); setSyncDot('error'); });
 }
 
-async function addOrder(o) {
-  const { id, ...data } = o;
-  await addDoc(collection(db, 'orders'), data);
-}
-async function updateOrder(o) {
-  const { id, ...data } = o;
-  await setDoc(doc(db, 'orders', id), data);
-}
-async function removeOrder(id) {
-  await deleteDoc(doc(db, 'orders', id));
+// ── NOTIFICATION ──────────────────────────────────────────
+function getNotifEnabled() { return localStorage.getItem('meal_notif') === '1'; }
+function setNotifEnabled(v) { localStorage.setItem('meal_notif', v ? '1' : '0'); }
+
+async function toggleNotif() {
+  if (!('Notification' in window)) { showToast('此瀏覽器不支援通知'); return; }
+
+  if (Notification.permission === 'denied') {
+    showToast('請在瀏覽器設定中允許通知權限');
+    return;
+  }
+
+  if (!getNotifEnabled()) {
+    // 開啟
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      setNotifEnabled(true);
+      scheduleNotif();
+      showToast('已開啟每日 08:30 午餐提醒 🔔');
+    } else {
+      showToast('未取得通知權限');
+    }
+  } else {
+    // 關閉
+    setNotifEnabled(false);
+    if(notifTimer) { clearTimeout(notifTimer); notifTimer = null; }
+    showToast('已關閉提醒');
+  }
+  updateNotifUI();
 }
 
-function setSyncDot(s) {
-  const d = document.getElementById('syncDot');
-  d.className = 'sync-dot' + (s ? ' '+s : '');
+function updateNotifUI() {
+  const enabled = getNotifEnabled() && Notification.permission === 'granted';
+  const supported = 'Notification' in window;
+
+  // header button
+  const btn = document.getElementById('notifBtn');
+  btn.textContent = enabled ? '🔔' : '🔕';
+  btn.className = 'hbtn' + (enabled ? ' notif-on' : '');
+  btn.title = enabled ? '已開啟每日08:30提醒（點擊關閉）' : '開啟每日08:30午餐提醒';
+
+  // drawer
+  const status = document.getElementById('notifStatus');
+  const drawerBtn = document.getElementById('notifDrawerBtn');
+  if (!supported) {
+    status.textContent = '此瀏覽器不支援推播通知';
+    status.className = 'notif-status';
+    drawerBtn.style.display = 'none';
+  } else if (Notification.permission === 'denied') {
+    status.textContent = '通知已被封鎖，請到瀏覽器設定 → 網站設定 → 通知，手動允許此網站';
+    status.className = 'notif-status denied';
+    drawerBtn.style.display = 'none';
+  } else if (enabled) {
+    status.textContent = '✓ 已開啟，每天 08:30 會提醒你今日午餐內容';
+    status.className = 'notif-status granted';
+    drawerBtn.textContent = '關閉提醒';
+  } else {
+    status.textContent = '尚未開啟，點下方按鈕開啟每日提醒';
+    status.className = 'notif-status';
+    drawerBtn.textContent = '開啟提醒';
+  }
+}
+
+function scheduleNotif() {
+  if(notifTimer) clearTimeout(notifTimer);
+  if(!getNotifEnabled() || Notification.permission !== 'granted') return;
+
+  const now = new Date();
+  const target = new Date();
+  target.setHours(8, 30, 0, 0);
+  if(target <= now) target.setDate(target.getDate() + 1); // 已過今天8:30，排明天
+
+  const ms = target - now;
+  notifTimer = setTimeout(() => {
+    fireNotif();
+    scheduleNotif(); // 排下一天
+  }, ms);
+}
+
+function fireNotif() {
+  if(Notification.permission !== 'granted') return;
+  const today = todayStr();
+  const todayOrders = orders.filter(o => o.meal_date === today);
+
+  let title, body;
+  if (todayOrders.length === 0) {
+    title = '🍱 今天沒有午餐訂單';
+    body = '記得自己安排午餐喔！';
+  } else {
+    title = `🍱 今日午餐：${todayOrders[0].restaurant}`;
+    body = todayOrders.map(o => `${o.item}　NT$${o.price}`).join('\n');
+  }
+
+  new Notification(title, {
+    body,
+    icon: 'https://cdn.jsdelivr.net/npm/twemoji@14/assets/72x72/1f371.png',
+    badge: 'https://cdn.jsdelivr.net/npm/twemoji@14/assets/72x72/1f371.png',
+    tag: 'meal-reminder',
+    renotify: true,
+  });
+}
+
+function testNotif() {
+  if(Notification.permission !== 'granted') {
+    showToast('請先開啟通知權限');
+    return;
+  }
+  fireNotif();
+  showToast('已發送測試通知');
+}
+
+// ── DRAWER ────────────────────────────────────────────────
+function openDrawer() {
+  updateDataInfo();
+  updateNotifUI();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+function updateDataInfo() {
+  const total = orders.reduce((s,o)=>s+o.price,0);
+  document.getElementById('dataInfo').textContent =
+    `共 ${orders.length} 筆訂單・總金額 NT$${total}\n儲存在此瀏覽器 localStorage，換電腦前請先匯出備份。`;
+}
+
+// ── JSON 匯出入 ───────────────────────────────────────────
+function exportJson() {
+  const data = { user: currentUser, exported: new Date().toISOString(), orders };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `meal-orders-${currentUser}-${todayStr()}.json`;
+  a.click();
+  showToast('已匯出 ✓');
+}
+
+function loadJsonFile(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      const imported = Array.isArray(data) ? data : (data.orders || []);
+      if(!imported.length) { showToast('找不到訂單資料'); return; }
+      if(!confirm(`確定匯入 ${imported.length} 筆訂單？（會覆蓋現有資料）`)) return;
+      orders = imported; save(); render(); updateDataInfo();
+      showToast(`已匯入 ${imported.length} 筆 ✓`);
+    } catch { showToast('JSON 格式有誤'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function clearAllData() {
+  if(!confirm(`確定刪除全部 ${orders.length} 筆訂單？`)) return;
+  orders = []; save(); render(); updateDataInfo();
+  showToast('已清除');
 }
 
 // ── TABS ──────────────────────────────────────────────────
-window.switchMainTab = function(tab) {
+function switchMainTab(tab) {
   ['upcoming','calendar','stats'].forEach(t => {
     document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
     document.getElementById(t+'Pane').style.display = t===tab ? '' : 'none';
   });
   if(tab==='calendar') renderCalendar();
   if(tab==='stats') renderStats();
-};
+}
 
 // ── RENDER ────────────────────────────────────────────────
 function render() {
@@ -431,10 +569,10 @@ function renderCalendar() {
   const byDate={};
   orders.forEach(o=>{if(!byDate[o.meal_date])byDate[o.meal_date]=[];byDate[o.meal_date].push(o);});
   const firstDay=new Date(calYear,calMonth,1),lastDay=new Date(calYear,calMonth+1,0);
-  const startDow=(firstDay.getDay()+6)%7;
+  const startDow=firstDay.getDay();
   const totalCells=Math.ceil((startDow+lastDay.getDate())/7)*7;
   let grid='';
-  ['一','二','三','四','五','六','日'].forEach(d=>{grid+=`<div class="cal-dow">${d}</div>`;});
+  ['日','一','二','三','四','五','六'].forEach(d=>{grid+=`<div class="cal-dow">${d}</div>`;});
   for(let i=0;i<totalCells;i++){
     const d=new Date(calYear,calMonth,i-startDow+1),ds=fmtDate(d);
     const isM=d.getMonth()===calMonth,hasO=byDate[ds]&&byDate[ds].length>0,isSel=calSelected===ds;
@@ -475,10 +613,10 @@ function renderCard(o,today){
 }
 
 // ── HELPERS ───────────────────────────────────────────────
-window.selectCalDate=(d)=>{calSelected=calSelected===d?null:d;renderCalendar();};
-window.calNav=(dir)=>{calMonth+=dir;if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;}calSelected=null;renderCalendar();};
-window.calNavToday=()=>{const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();calSelected=null;renderCalendar();};
-window.doDelete=async(id)=>{if(!confirm('確定要刪除？'))return;await removeOrder(id);showToast('已刪除');};
+function selectCalDate(d){ calSelected=calSelected===d?null:d; renderCalendar(); }
+function calNav(dir){ calMonth+=dir; if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;} calSelected=null; renderCalendar(); }
+function calNavToday(){ const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); calSelected=null; renderCalendar(); }
+function doDelete(id){ if(!confirm('確定要刪除？'))return; orders=orders.filter(o=>o.id!==id); save(); render(); showToast('已刪除'); }
 
 function getSectionLabel(ds,today){
   const d=new Date(ds+'T12:00'),t=new Date(today+'T12:00'),diff=Math.round((d-t)/86400000);
@@ -489,61 +627,61 @@ function getSectionLabel(ds,today){
   if(d>=nm&&d<=ns)return'下週';
   return`${d.getFullYear()}年${d.getMonth()+1}月`;
 }
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function todayStr(){return fmtDate(new Date());}
-function fmtDate(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ return fmtDate(new Date()); }
+function fmtDate(d){ return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ── ORDER MODAL ───────────────────────────────────────────
-window.openOrderModal=function(id){
+function openOrderModal(id){
   editingId=id||null;
   document.getElementById('orderModalTitle').textContent=id?'編輯訂單':'新增訂單';
   document.getElementById('noteEntries').innerHTML='';
   if(id){const o=orders.find(x=>x.id===id);document.getElementById('f_meal_date').value=o.meal_date;document.getElementById('f_deadline').value=o.deadline||'';document.getElementById('f_restaurant').value=o.restaurant;document.getElementById('f_item').value=o.item;document.getElementById('f_price').value=o.price;(o.notes||[]).forEach(n=>addNoteEntry(n.item,n.price));}
   else{['f_meal_date','f_deadline','f_restaurant','f_item','f_price'].forEach(i=>document.getElementById(i).value='');}
   document.getElementById('orderModal').classList.add('open');
-};
-window.closeOrderModal=()=>document.getElementById('orderModal').classList.remove('open');
-window.addNoteEntry=function(iv,pv){
+}
+function closeOrderModal(){ document.getElementById('orderModal').classList.remove('open'); }
+function addNoteEntry(iv,pv){
   const div=document.createElement('div');div.className='note-entry';
   div.innerHTML=`<input type="text" placeholder="品項名稱" value="${escHtml(iv||'')}"><input type="number" class="price-input" placeholder="金額" min="0" value="${pv||''}"><button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById('noteEntries').appendChild(div);
-};
-window.saveOrder=async function(){
+}
+function saveOrder(){
   const meal_date=document.getElementById('f_meal_date').value,deadline=document.getElementById('f_deadline').value;
   const restaurant=document.getElementById('f_restaurant').value.trim(),item=document.getElementById('f_item').value.trim();
   const price=parseInt(document.getElementById('f_price').value)||0;
   if(!meal_date||!restaurant||!item){showToast('請填寫日期、餐廳和餐點');return;}
   const notes=[];document.querySelectorAll('.note-entry').forEach(row=>{const[a,b]=row.querySelectorAll('input');if(a.value.trim())notes.push({item:a.value.trim(),price:parseInt(b.value)||0});});
-  if(editingId){await updateOrder({id:editingId,meal_date,deadline,restaurant,item,price,notes});showToast('已更新 ✓');}
-  else{await addOrder({id:uid(),meal_date,deadline,restaurant,item,price,notes});showToast('已新增 ✓');}
-  closeOrderModal();
-};
+  if(editingId){const idx=orders.findIndex(o=>o.id===editingId);orders[idx]={...orders[idx],meal_date,deadline,restaurant,item,price,notes};showToast('已更新 ✓');}
+  else{orders.push({id:uid(),meal_date,deadline,restaurant,item,price,notes});showToast('已新增 ✓');}
+  save();render();closeOrderModal();
+}
 
 // ── IMPORT ────────────────────────────────────────────────
-window.openImport=()=>{document.getElementById('importText').value='';document.getElementById('previewContent').innerHTML='';document.getElementById('btnConfirmImport').disabled=true;parsedOrders=[];switchImportTab('paste');document.getElementById('importModal').classList.add('open');};
-window.closeImport=()=>document.getElementById('importModal').classList.remove('open');
-window.switchImportTab=(tab)=>{document.getElementById('itabPaste').classList.toggle('active',tab==='paste');document.getElementById('itabPreview').classList.toggle('active',tab==='preview');document.getElementById('ipanePaste').style.display=tab==='paste'?'':'none';document.getElementById('ipanePreview').style.display=tab==='preview'?'':'none';};
-window.parseAndPreview=()=>{
+function openImport(){ document.getElementById('importText').value='';document.getElementById('previewContent').innerHTML='';document.getElementById('btnConfirmImport').disabled=true;parsedOrders=[];switchImportTab('paste');document.getElementById('importModal').classList.add('open'); }
+function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
+function switchImportTab(tab){ document.getElementById('itabPaste').classList.toggle('active',tab==='paste');document.getElementById('itabPreview').classList.toggle('active',tab==='preview');document.getElementById('ipanePaste').style.display=tab==='paste'?'':'none';document.getElementById('ipanePreview').style.display=tab==='preview'?'':'none'; }
+function parseAndPreview(){
   const raw=document.getElementById('importText').value;if(!raw.trim()){showToast('請先貼上訂單文字');return;}
   const{results,errors}=parseOrderText(raw);parsedOrders=results;let html='';
   errors.forEach(e=>{html+=`<div class="preview-error">⚠️ ${escHtml(e)}</div>`;});
   if(!results.length&&!errors.length)html='<div class="preview-error">⚠️ 找不到可辨識的訂單</div>';
   if(results.length){html+=`<div class="preview-label">✓ 成功解析 ${results.length} 筆訂單</div>`;results.forEach(o=>{const d=new Date(o.meal_date+'T12:00');const dl=o.deadline?(()=>{const x=new Date(o.deadline);return`截止 ${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`;})():'（無截止時間）';html+=`<div class="preview-card"><div class="p-head">${d.getMonth()+1}/${d.getDate()} 週${WD[d.getDay()]}　${escHtml(o.restaurant)}</div><div class="p-sub">${escHtml(o.item)}　NT$${o.price}　${dl}</div></div>`;});}
   document.getElementById('previewContent').innerHTML=html;switchImportTab('preview');document.getElementById('btnConfirmImport').disabled=!results.length;
-};
-window.confirmImport=async()=>{if(!parsedOrders.length)return;for(const o of parsedOrders)await addOrder(o);closeImport();showToast(`已匯入 ${parsedOrders.length} 筆 ✓`);};
+}
+function confirmImport(){ if(!parsedOrders.length)return;orders.push(...parsedOrders);save();render();closeImport();showToast(`已匯入 ${parsedOrders.length} 筆 ✓`); }
 
 function parseOrderText(raw){
   const results=[],errors=[];const text=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();if(!text)return{results,errors};
   const blocks=text.split(/(?=\d{1,2}\/\d{1,2}\s*[（(]週[一二三四五六日][）)][^\n]*\|)/g).map(b=>b.trim()).filter(Boolean);
   if(!blocks.length){errors.push('找不到可辨識的訂單格式');return{results,errors};}
   const y=new Date().getFullYear();
-  for(const block of blocks){try{const lines=block.split('\n').map(l=>l.trim()).filter(Boolean);const hm=lines[0].match(/(\d{1,2})\/(\d{1,2})\s*[（(]週[一二三四五六日][）)]\s*(.+?)\|\s*(\d{1,2})\/(\d{1,2})/);if(!hm){errors.push(`無法解析：「${lines[0].slice(0,30)}」`);continue;}const restaurant=hm[3].trim();const mealDate=`${y}-${String(parseInt(hm[4])).padStart(2,'0')}-${String(parseInt(hm[5])).padStart(2,'0')}`;let deadline='';const dlLine=lines.find(l=>l.includes('截止於')||l.includes('截止:'));if(dlLine){const dm=dlLine.match(/(\d{1,2})\/(\d{1,2})\s*週[一二三四五六日]\s*(\d{2}:\d{2})/);if(dm)deadline=`${y}-${String(parseInt(dm[1])).padStart(2,'0')}-${String(parseInt(dm[2])).padStart(2,'0')}T${dm[3]}`;}const notes=[];let mainItem='',totalPrice=0;const itemLines=lines.filter(l=>!/^\d{1,2}\/\d{1,2}/.test(l)&&!/^(Total|評比|截止|訂單明細)/.test(l)&&/\d+\s*$/.test(l)&&l.length>2);for(const il of itemLines){const parts=il.split(/\t+/).map(p=>p.trim()).filter(Boolean);if(!parts.length)continue;const name=parts[0];const nums=il.match(/\d+/g);if(!nums)continue;const price=parseInt(nums[nums.length-1]);notes.push({item:name,price});totalPrice+=price;mainItem=mainItem?mainItem+' + '+name:name;}if(!mainItem){errors.push(`「${restaurant}」找不到餐點`);continue;}results.push({id:uid(),meal_date:mealDate,deadline,restaurant,item:mainItem,price:totalPrice,notes:notes.length>1?notes:[]});}catch(e){errors.push(`解析錯誤：${e.message}`);}}
+  for(const block of blocks){try{const lines=block.split('\n').map(l=>l.trim()).filter(Boolean);const hm=lines[0].match(/(\d{1,2})\/(\d{1,2})\s*[（(]週[一二三四五六日][）)]\s*(.+?)\|\s*(\d{1,2})\/(\d{1,2})/);if(!hm){errors.push(`無法解析：「${lines[0].slice(0,30)}」`);continue;}const restaurant=hm[3].trim();const mealDate=`${y}-${String(parseInt(hm[4])).padStart(2,'0')}-${String(parseInt(hm[5])).padStart(2,'0')}`;let deadline='';const dlLine=lines.find(l=>l.includes('截止於')||l.includes('截止:'));if(dlLine){const dm=dlLine.match(/(\d{1,2})\/(\d{1,2})\s*週[一二三四五六日]\s*(\d{2}:\d{2})/);if(dm)deadline=`${y}-${String(parseInt(dm[1])).padStart(2,'0')}-${String(parseInt(dm[2])).padStart(2,'0')}T${dm[3]}`;}const notes=[];let mainItem='',totalPrice=0;const itemLines=lines.filter(l=>!/^\d{1,2}\/\d{1,2}/.test(l)&&!/^(Total|評比|截止|訂單明細|\$|＄)/.test(l)&&!/^\$\s*\d+/.test(l)&&!/^＄\s*\d+/.test(l)&&!/^Total/.test(l)&&/\d+\s*$/.test(l)&&l.length>2&&!/^\s*\d+\s*$/.test(l));for(const il of itemLines){const parts=il.split(/\t+/).map(p=>p.trim()).filter(Boolean);if(!parts.length)continue;const name=parts[0];const nums=il.match(/\d+/g);if(!nums)continue;const price=parseInt(nums[nums.length-1]);notes.push({item:name,price});totalPrice+=price;mainItem=mainItem?mainItem+' + '+name:name;}if(!mainItem){errors.push(`「${restaurant}」找不到餐點`);continue;}results.push({id:uid(),meal_date:mealDate,deadline,restaurant,item:mainItem,price:totalPrice,notes:notes.length>1?notes:[]});}catch(e){errors.push(`解析錯誤：${e.message}`);}}
   return{results,errors};
 }
 
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200); }
 [document.getElementById('orderModal'),document.getElementById('importModal')].forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
 </script>
 </body>
