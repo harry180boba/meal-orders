@@ -344,5 +344,19 @@ function locateMe() {
 }
 
 </script>
+
+<!-- Mobile list bottom sheet -->
+<div class="list-sheet" id="listSheet">
+  <div class="sheet-handle" onclick="toggleSheet()">
+    <div class="sheet-handle-inner">
+      <div class="sheet-handle-bar" style="flex-shrink:0;margin:0"></div>
+      <span class="sheet-handle-title" id="sheetTitle">景點 / 美食清單</span>
+      <span class="sheet-handle-count" id="sheetCount"></span>
+      <span class="sheet-arrow" id="sheetArrow">▲</span>
+    </div>
+  </div>
+  <div class="sheet-list" id="sheetList"></div>
+</div>
+
 </body>
 </html>
