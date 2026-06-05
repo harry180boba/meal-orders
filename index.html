@@ -3,686 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>訂便當</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>蘭嶼六大部落 · 景點美食地圖</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #F5F3EE; --surface: #FDFCF8; --surface2: #EEEAE2; --border: #D8D3C8;
-  --text: #1A1814; --text2: #6B6660; --text3: #A09B94;
-  --accent: #C84B2F; --accent-light: #F5E8E4;
-  --green: #2A7A4B; --green-light: #E2F0E8;
-  --radius: 10px; --radius-lg: 16px;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ocean:#0a3d5c;--teal:#0d7a5f;--sand:#f3ede4;--white:#fff;
+  --text:#1c1c1c;--muted:#6a6a6a;--border:#e0d8ce;--panel:#faf7f3;
 }
-body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;background:var(--sand);color:var(--text)}
 
-/* LOGIN */
-.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px 32px; width: 100%; max-width: 360px; }
-.login-logo { font-size: 32px; text-align: center; margin-bottom: 6px; }
-.login-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 4px; }
-.login-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 28px; }
-.login-label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
-.login-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 18px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text); outline: none; text-align: center; letter-spacing: .08em; transition: border-color .15s; }
-.login-input:focus { border-color: var(--accent); }
-.login-input::placeholder { font-size: 14px; letter-spacing: 0; font-family: 'Noto Sans TC', sans-serif; font-weight: 400; }
-.login-btn { width: 100%; margin-top: 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); padding: 13px; font-size: 15px; font-family: inherit; font-weight: 700; cursor: pointer; transition: opacity .13s; }
-.login-btn:hover { opacity: .88; }
-.login-error { font-size: 13px; color: var(--accent); text-align: center; margin-top: 10px; min-height: 20px; }
+/* TOP BAR */
+.topbar{
+  background:linear-gradient(135deg,#062d45,#0a3d5c 60%,#0d5c45);
+  padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.25)
+}
+.topbar-title{font-family:'Noto Serif TC',serif;font-size:17px;color:#fff;font-weight:700;letter-spacing:1px;white-space:nowrap}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;white-space:nowrap}
 
-/* APP */
-#app { display: none; padding-bottom: 80px; }
-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px 0; position: sticky; top: 0; z-index: 100; }
-.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
-.logo { font-size: 17px; font-weight: 700; flex-shrink: 0; }
-.header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-.user-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
-.user-pill strong { color: var(--text); }
-.btn-logout { background: none; border: none; font-size: 11px; color: var(--text3); cursor: pointer; text-decoration: underline; padding: 0; }
-.btn-logout:hover { color: var(--accent); }
+/* TABS */
+.tribe-tabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:9px 14px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
+.tribe-tabs::-webkit-scrollbar{display:none}
+.tribe-tab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;white-space:nowrap;user-select:none}
+.tribe-tab:hover{background:var(--sand)}
+.tribe-tab.active{color:#fff;border-color:transparent}
 
-/* header icon buttons */
-.hbtn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 13px; font-family: inherit; cursor: pointer; color: var(--text2); transition: all .12s; white-space: nowrap; }
-.hbtn:hover { background: var(--border); }
-.hbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.hbtn.primary:hover { opacity: .85; }
-.hbtn.notif-on { background: var(--green-light); color: var(--green); border-color: #b8dfc6; }
+/* LAYOUT */
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 91px)}
 
-.tab-nav { display: flex; }
-.tab-nav-btn { flex: 1; padding: 9px 8px 10px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text3); cursor: pointer; font-weight: 500; transition: all .13s; margin-bottom: -1px; }
-.tab-nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--surface2); color: var(--text2); font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 700; border-radius: 10px; padding: 1px 6px; margin-left: 4px; min-width: 18px; }
-.tab-nav-btn.active .tab-badge { background: var(--accent-light); color: var(--accent); }
+/* SIDEBAR */
+.sidebar{width:270px;min-width:270px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--panel)}
+.panel-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.panel-count{font-size:20px;font-weight:500;color:var(--ocean)}
+.spot-list{flex:1;overflow-y:auto;padding:6px}
+.spot-list::-webkit-scrollbar{width:4px}
+.spot-list::-webkit-scrollbar-track{background:transparent}
+.spot-list::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
+.tribe-sep{font-size:10.5px;font-weight:500;padding:10px 10px 3px;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
+.spot-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;border:1.5px solid transparent;margin-bottom:2px;transition:all .15s}
+.spot-item:hover{background:var(--sand)}
+.spot-item.active{background:var(--white);border-color:var(--ocean);box-shadow:0 2px 8px rgba(10,61,92,.1)}
+.spot-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.spot-dot.square{border-radius:3px;width:9px;height:9px}
+.spot-name{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.3}
+.spot-tag{font-size:10px;padding:1px 6px;border-radius:6px;margin-top:3px;display:inline-block;font-weight:500}
 
-main { padding: 14px; max-width: 720px; margin: 0 auto; }
-.section-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px 2px; }
-.section-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--text3); font-family: 'DM Mono', monospace; text-transform: uppercase; }
-.section-total { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+/* MAP */
+.map-wrap{flex:1;position:relative}
+#map{width:100%;height:100%}
 
-.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 8px; overflow: hidden; transition: box-shadow .15s; }
-.order-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.07); }
-.card-main { display: flex; align-items: stretch; }
-.card-date { background: var(--surface2); padding: 12px 10px; min-width: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border); flex-shrink: 0; }
-.card-date.today-date { background: var(--accent-light); }
-.card-date .month { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
-.card-date .day-num { font-size: 21px; font-weight: 700; line-height: 1.1; }
-.card-date.today-date .day-num { color: var(--accent); }
-.card-date .weekday { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.card-body { flex: 1; padding: 10px 12px; min-width: 0; }
-.card-restaurant { font-size: 11px; color: var(--text3); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card-item { font-size: 14px; font-weight: 500; margin-bottom: 3px; line-height: 1.4; }
-.deadline-badge { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text3); }
-.deadline-badge.urgent { color: var(--accent); font-weight: 700; }
-.card-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: 10px 10px 10px 6px; flex-shrink: 0; }
-.price-tag { font-size: 15px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.card-actions { display: flex; gap: 4px; }
-.btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text2); transition: all .12s; }
-.btn-icon:hover { background: var(--surface2); }
-.btn-icon.danger:hover { background: #FEE; color: var(--accent); border-color: var(--accent); }
-.note-items { border-top: 1px dashed var(--border); padding: 5px 12px 8px 66px; display: flex; flex-wrap: wrap; gap: 4px; }
-.note-chip { background: var(--surface2); border-radius: 20px; padding: 2px 8px; font-size: 11px; color: var(--text2); }
-.today-pill { display: inline-flex; align-items: center; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 2px 7px; margin-left: 5px; vertical-align: middle; }
+/* DETAIL PANEL */
+.detail-panel{
+  width:0;min-width:0;background:var(--white);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease;flex-shrink:0
+}
+.detail-panel.open{width:260px;min-width:260px}
+.detail-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10}
+.detail-img-wrap{position:relative;flex-shrink:0}
+.detail-img{width:100%;height:150px;object-fit:cover;display:block}
+.detail-img-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#c5ddd6,#9cc8bb);flex-shrink:0}
+.detail-body{padding:14px 16px;flex:1;overflow-y:auto}
+.detail-badge{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;display:inline-block;margin-bottom:8px}
+.detail-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
+.detail-rating{font-size:12px;color:#9a7200;margin-bottom:10px}
+.detail-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px}
+.detail-tip{background:var(--sand);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:500;margin-bottom:12px;border-left:3px solid var(--teal);color:#1a5c47}
+.detail-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.btn-primary{display:block;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#fff;text-decoration:none;margin-bottom:6px;cursor:pointer;border:none;width:100%;font-family:inherit}
+.btn-secondary{display:block;text-align:center;padding:8px;border-radius:9px;font-size:12.5px;font-weight:500;text-decoration:none;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text);width:100%;font-family:inherit}
 
-/* CALENDAR */
-.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.cal-month-label { font-size: 16px; font-weight: 700; }
-.cal-nav { display: flex; gap: 5px; }
-.cal-nav-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-.cal-nav-btn:hover { background: var(--border); }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 14px; }
-.cal-dow { text-align: center; font-size: 11px; font-weight: 700; color: var(--text3); padding: 4px 0 5px; font-family: 'DM Mono', monospace; }
-.cal-cell { aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 4px 2px 2px; min-height: 42px; }
-.cal-cell.has-order { background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: all .12s; }
-.cal-cell.has-order:hover { background: var(--accent-light); border-color: var(--accent); }
-.cal-cell.selected { background: var(--accent-light); border: 1.5px solid var(--accent); }
-.cal-cell.other-month { opacity: .3; }
-.cal-day { font-size: 12px; font-weight: 500; }
-.cal-cell.has-order .cal-day { font-weight: 700; color: var(--accent); }
-.cal-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 2px; }
-.cal-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: .6; }
-.cal-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 13px; margin-bottom: 12px; }
-.cal-detail-head { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
-.cal-detail-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); }
-.cal-detail-item:last-child { border-bottom: none; }
-.cal-detail-name { font-size: 14px; font-weight: 500; }
-.cal-detail-rest { font-size: 12px; color: var(--text3); margin-top: 1px; }
-.cal-detail-price { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; margin-left: 10px; flex-shrink: 0; }
+/* POPUP */
+.leaflet-popup-content-wrapper{border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,.18)!important;padding:0!important;overflow:hidden}
+.leaflet-popup-content{margin:0!important;width:0!important;height:0!important;overflow:hidden!important;display:none!important}
+.leaflet-popup-tip-container{display:none}
+.leaflet-popup-content-wrapper{cursor:pointer}
 
-/* STATS */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 18px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 13px; text-align: center; }
-.stat-num { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; line-height: 1; margin-bottom: 4px; }
-.stat-label { font-size: 11px; color: var(--text3); }
-.restaurant-list { display: flex; flex-direction: column; gap: 6px; }
-.restaurant-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 13px; display: flex; align-items: center; gap: 11px; }
-.restaurant-rank { font-size: 13px; font-weight: 700; color: var(--text3); font-family: 'DM Mono', monospace; min-width: 22px; }
-.restaurant-rank.top { color: var(--accent); }
-.restaurant-info { flex: 1; min-width: 0; }
-.restaurant-name { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.restaurant-count { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.restaurant-bar-wrap { width: 72px; flex-shrink: 0; }
-.restaurant-bar-bg { background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden; }
-.restaurant-bar-fill { background: var(--accent); height: 100%; border-radius: 4px; }
-.restaurant-spend { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text2); min-width: 50px; text-align: right; flex-shrink: 0; }
+/* LEGEND */
+.legend{position:absolute;bottom:20px;right:16px;background:rgba(255,255,255,.95);border-radius:12px;padding:10px 14px;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:11.5px;backdrop-filter:blur(4px)}
+.legend-title{font-weight:500;color:var(--ocean);margin-bottom:7px;font-size:11px;letter-spacing:.5px}
+.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:4px;color:var(--text);font-size:11px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
 
-/* DATA DRAWER */
-.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.35); z-index: 150; }
-.drawer-overlay.open { display: block; }
-.drawer { position: fixed; top: 0; right: -360px; width: 340px; max-width: 92vw; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 160; transition: right .25s ease; padding: 24px 20px; overflow-y: auto; }
-.drawer.open { right: 0; }
-.drawer-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
-.drawer-section { margin-bottom: 22px; }
-.drawer-section-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
-.drawer-actions { display: flex; flex-direction: column; gap: 8px; }
-.drawer-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; font-family: inherit; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; transition: all .12s; }
-.drawer-btn:hover { background: var(--border); }
-.drawer-btn.danger { color: var(--accent); }
-.drawer-btn.danger:hover { background: var(--accent-light); border-color: var(--accent); }
-.drawer-btn.success { color: var(--green); }
-.drawer-btn.success:hover { background: var(--green-light); border-color: #b8dfc6; }
-.drawer-info { font-size: 12px; color: var(--text3); line-height: 1.7; background: var(--bg); border-radius: var(--radius); padding: 10px 12px; margin-top: 8px; }
-.notif-status { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); line-height: 1.6; }
-.notif-status.granted { background: var(--green-light); border-color: #b8dfc6; color: var(--green); }
-.notif-status.denied { background: var(--accent-light); border-color: #e8b8b0; color: var(--accent); }
-
-.empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
-.empty-icon { font-size: 38px; margin-bottom: 10px; }
-
-/* MODALS */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.45); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--border); }
-.modal-header { padding: 16px 16px 0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.modal-title { font-size: 15px; font-weight: 700; }
-.modal-body { padding: 0 16px 16px; }
-.modal-footer { display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--border); }
-.btn-cancel { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text2); cursor: pointer; }
-.btn-save { flex: 2; background: var(--accent); border: none; border-radius: 8px; padding: 9px; font-size: 14px; font-family: inherit; font-weight: 700; color: #fff; cursor: pointer; }
-.btn-save:hover { opacity: .88; }
-.field { margin-bottom: 10px; }
-.field label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 4px; }
-.field input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; font-size: 14px; font-family: inherit; color: var(--text); outline: none; transition: border-color .12s; }
-.field input:focus { border-color: var(--accent); }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.note-entry { display: flex; gap: 6px; margin-bottom: 5px; align-items: center; }
-.note-entry input { flex: 1; }
-.note-entry input.price-input { max-width: 76px; font-family: 'DM Mono', monospace; }
-.btn-note-add { background: var(--surface2); border: 1px dashed var(--border); border-radius: 8px; padding: 5px 12px; font-size: 13px; color: var(--text2); cursor: pointer; width: 100%; font-family: inherit; }
-.btn-note-add:hover { background: var(--green-light); color: var(--green); border-color: var(--green); }
-.import-textarea { width: 100%; min-height: 170px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text); outline: none; resize: vertical; line-height: 1.7; }
-.import-textarea:focus { border-color: var(--accent); }
-.import-hint { font-size: 12px; color: var(--text3); margin-top: 6px; line-height: 1.6; }
-.btn-parse { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 13px; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); cursor: pointer; margin-top: 8px; }
-.preview-label { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
-.preview-card { background: var(--green-light); border: 1px solid #b8dfc6; border-radius: var(--radius); padding: 8px 12px; margin-bottom: 5px; font-size: 13px; }
-.preview-card .p-head { font-weight: 700; margin-bottom: 2px; }
-.preview-card .p-sub { color: var(--text2); font-size: 12px; }
-.preview-error { background: var(--accent-light); border: 1px solid #e8b8b0; border-radius: var(--radius); padding: 8px 12px; font-size: 13px; color: var(--accent); margin-bottom: 5px; }
-.itab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-.itab { flex: 1; padding: 7px; text-align: center; font-size: 13px; font-family: inherit; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text2); cursor: pointer; font-weight: 500; margin-bottom: -1px; }
-.itab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 300; transition: transform .25s ease; pointer-events: none; }
-.toast.show { transform: translateX(-50%) translateY(0); }
+/* MOBILE */
+@media(max-width:700px){
+  .sidebar{display:none}
+  .detail-panel.open{width:100%;position:absolute;bottom:0;left:0;z-index:1000;height:60%;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.15)}
+}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo">🍱</div>
-    <div class="login-title">訂便當</div>
-    <div class="login-sub">輸入你的名字或代號</div>
-    <label class="login-label" for="nameInput">名稱</label>
-    <input class="login-input" id="nameInput" type="text" placeholder="例：小明 / cole" autocomplete="off" maxlength="20">
-    <button class="login-btn" onclick="doLogin()">進入</button>
-    <div class="login-error" id="loginError"></div>
+<div class="topbar">
+  <div>
+    <div class="topbar-title">🌊 蘭嶼六大部落 · 景點美食地圖</div>
+    <div class="topbar-sub">Ponso No Tao · 人之島 · 6/6–6/8</div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <header>
-    <div class="header-top">
-      <div class="logo">🍱 訂便當</div>
-      <div class="header-right">
-        <div class="user-pill">
-          <strong id="userLabel">—</strong>
-          <button class="btn-logout" onclick="doLogout()">登出</button>
-        </div>
-        <button class="hbtn" id="notifBtn" onclick="toggleNotif()" title="每天8:30午餐提醒">🔔</button>
-        <button class="hbtn" onclick="openImport()" title="匯入訂單">📋</button>
-        <button class="hbtn" onclick="openDrawer()" title="資料管理">⚙️</button>
-        <button class="hbtn primary" onclick="openOrderModal()">＋ 新增</button>
-      </div>
-    </div>
-    <div class="tab-nav">
-      <button class="tab-nav-btn active" id="tabUpcoming" onclick="switchMainTab('upcoming')">即將到來 <span class="tab-badge" id="badgeUpcoming">0</span></button>
-      <button class="tab-nav-btn" id="tabCalendar" onclick="switchMainTab('calendar')">月曆</button>
-      <button class="tab-nav-btn" id="tabStats" onclick="switchMainTab('stats')">統計</button>
-    </div>
-  </header>
-  <main>
-    <div id="upcomingPane"></div>
-    <div id="calendarPane" style="display:none"></div>
-    <div id="statsPane" style="display:none"></div>
-  </main>
+<div class="tribe-tabs" id="tribeTabs">
+  <div class="tribe-tab active" data-tribe="all">🗺 全部</div>
+  <div class="tribe-tab" data-tribe="dongqing">🌅 東清</div>
+  <div class="tribe-tab" data-tribe="yeyin">💧 野銀</div>
+  <div class="tribe-tab" data-tribe="langdao">🚣 朗島</div>
+  <div class="tribe-tab" data-tribe="yeyou">⚓ 椰油</div>
+  <div class="tribe-tab" data-tribe="yuren">✈️ 漁人</div>
+  <div class="tribe-tab" data-tribe="hongtou">🌄 紅頭</div>
+  <div class="tribe-tab" data-tribe="ig">📸 IG打卡</div>
+  <div class="tribe-tab" data-tribe="food">🍽 美食</div>
 </div>
 
-<!-- DATA DRAWER -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-title">
-    ⚙️ 資料管理
-    <button class="btn-icon" onclick="closeDrawer()">✕</button>
-  </div>
-
-  <div class="drawer-section">
-    <div class="drawer-section-label">備份 / 還原</div>
-    <div class="drawer-actions">
-      <button class="drawer-btn success" onclick="exportJson()">⬇ 匯出 data.json</button>
-      <button class="drawer-btn" onclick="document.getElementById('jsonFileInput').click()">⬆ 匯入 data.json</button>
+<div class="main">
+  <div class="sidebar">
+    <div class="panel-header">
+      <div class="panel-label">景點 / 美食清單</div>
+      <div class="panel-count" id="spotCount">30 個</div>
     </div>
-    <div class="drawer-info" id="dataInfo">載入中…</div>
+    <div class="spot-list" id="spotList"></div>
   </div>
-
-  <div class="drawer-section">
-    <div class="drawer-section-label">🔔 每日提醒（08:30）</div>
-    <div class="notif-status" id="notifStatus">載入中…</div>
-    <div class="drawer-actions" style="margin-top:8px">
-      <button class="drawer-btn" id="notifDrawerBtn" onclick="toggleNotif()">開啟提醒</button>
-      <button class="drawer-btn" onclick="testNotif()">🧪 測試通知</button>
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="legend">
+      <div class="legend-title">圖例</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1565C0"></div>東清</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2E7D32"></div>野銀</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#BF360C"></div>朗島</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6A1B9A"></div>椰油</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E65100"></div>漁人</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#880E4F"></div>紅頭</div>
+      <div class="legend-item"><div class="legend-sq" style="background:#AD1457"></div>📸 IG打卡</div>
+      <div class="legend-item"><div class="legend-sq" style="background:#5D4037"></div>🍽 美食</div>
     </div>
   </div>
-
-  <div class="drawer-section">
-    <div class="drawer-section-label">危險操作</div>
-    <div class="drawer-actions">
-      <button class="drawer-btn danger" onclick="clearAllData()">🗑 清除全部訂單</button>
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-img-wrap" id="detailImgWrap">
+      <div class="detail-img-ph" id="detailImgPh">🌊</div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body">
+      <span class="detail-badge" id="detailBadge"></span>
+      <div class="detail-name" id="detailName"></div>
+      <div class="detail-rating" id="detailRating"></div>
+      <div class="detail-desc" id="detailDesc"></div>
+      <div class="detail-tip" id="detailTip"></div>
+      <div class="detail-hours" id="detailHours"></div>
+      <button class="btn-primary" id="detailMapsBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
     </div>
   </div>
 </div>
 
-<!-- ORDER MODAL -->
-<div class="modal-overlay" id="orderModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="orderModalTitle">新增訂單</div>
-      <button class="btn-icon" onclick="closeOrderModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="field-row">
-        <div class="field"><label>用餐日期</label><input type="date" id="f_meal_date"></div>
-        <div class="field"><label>截止時間</label><input type="datetime-local" id="f_deadline"></div>
-      </div>
-      <div class="field"><label>餐廳名稱</label><input type="text" id="f_restaurant" placeholder="例：港星燒臘便當店"></div>
-      <div class="field"><label>餐點名稱</label><input type="text" id="f_item" placeholder="例：蒲燒鯛魚（半飯）"></div>
-      <div class="field"><label>金額（元）</label><input type="number" id="f_price" placeholder="90" min="0" style="max-width:110px"></div>
-      <div class="field">
-        <label>細項明細（選填）</label>
-        <div id="noteEntries"></div>
-        <button class="btn-note-add" onclick="addNoteEntry()">＋ 新增細項</button>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeOrderModal()">取消</button>
-      <button class="btn-save" onclick="saveOrder()">儲存</button>
-    </div>
-  </div>
-</div>
-
-<!-- IMPORT MODAL -->
-<div class="modal-overlay" id="importModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">📋 貼上訂單匯入</div>
-      <button class="btn-icon" onclick="closeImport()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="itab-row">
-        <button class="itab active" id="itabPaste" onclick="switchImportTab('paste')">貼上文字</button>
-        <button class="itab" id="itabPreview" onclick="switchImportTab('preview')">預覽結果</button>
-      </div>
-      <div id="ipanePaste">
-        <textarea class="import-textarea" id="importText" placeholder="將訂單明細文字貼在這裡…"></textarea>
-        <p class="import-hint">支援從訂餐平台複製的「訂單明細」格式，可一次貼入多筆</p>
-        <button class="btn-parse" onclick="parseAndPreview()">🔍 解析預覽</button>
-      </div>
-      <div id="ipanePreview" style="display:none"><div id="previewContent"></div></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeImport()">取消</button>
-      <button class="btn-save" id="btnConfirmImport" onclick="confirmImport()" disabled>匯入訂單</button>
-    </div>
-  </div>
-</div>
-
-<input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadJsonFile(event)">
-<div class="toast" id="toast"></div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const WD = ['日','一','二','三','四','五','六'];
-let orders = [], editingId = null, parsedOrders = [];
-let calYear, calMonth, calSelected = null;
-let currentUser = null;
-let notifTimer = null;
+const TC={
+  dongqing:{name:'東清部落',emoji:'🌅',color:'#1565C0',bg:'#E3F2FD',text:'#0D3C7A'},
+  yeyin:   {name:'野銀部落',emoji:'💧',color:'#2E7D32',bg:'#E8F5E9',text:'#1B5E20'},
+  langdao: {name:'朗島部落',emoji:'🚣',color:'#BF360C',bg:'#FBE9E7',text:'#7F2408'},
+  yeyou:   {name:'椰油部落',emoji:'⚓',color:'#6A1B9A',bg:'#F3E5F5',text:'#4A0F6E'},
+  yuren:   {name:'漁人部落',emoji:'✈️',color:'#E65100',bg:'#FFF3E0',text:'#7F2E00'},
+  hongtou: {name:'紅頭部落',emoji:'🌄',color:'#880E4F',bg:'#FCE4EC',text:'#5C0935'},
+  ig:      {name:'IG打卡',emoji:'📸',color:'#AD1457',bg:'#FCE4EC',text:'#880E4F'},
+  food:    {name:'美食餐廳',emoji:'🍽',color:'#5D4037',bg:'#EFEBE9',text:'#3E2723'},
+};
 
-const nowD = new Date();
-calYear = nowD.getFullYear(); calMonth = nowD.getMonth();
+const SPOTS=[
+  // 東清
+  {id:'dq1',t:'dongqing',n:'東清灣',tag:'必去',r:4.7,rc:756,d:'台灣最早看到日出的地方。清晨拼板舟靜靜停在灣內，金光灑落，是蘭嶼最經典的畫面。',tip:'最佳時間：清晨 5:00–6:30',lat:22.0577,lng:121.5657,url:'https://maps.google.com/?cid=16983574079719480307',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOK7jvVhoz5Ck8ISGjSc8S4KEkt-zNT03WCh2B4oJMTXo2bJiWpWYSL7yNdgUR5zWql6Z-A2hBPiY6PAL7-3oqME9Ogel3XRNNgG8_cYwG4XIvtKaBz0dYMp3B-uMxKfy3ACk-qVe9MdSoAk9M=s600'},
+  {id:'dq2',t:'dongqing',n:'軍艦岩',tag:'地形',r:4.6,rc:113,d:'形似軍艦的壯觀礁岩，是蘭嶼最具氣勢的地形奇觀之一。',tip:'位於東清北方海岸',lat:22.0790,lng:121.5796,url:'https://maps.google.com/?cid=15844536729599641507',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMrp4UGX4fKkV7W70hhbz-9S8GZFq0-ypyan4gbnAhOje2chOvghFzdIFg59PcZGUonlsAx5YSVuNHTX8bwM6Lj-XlsU_iUcUUkQXye_kI383u0fxxBZBt13x-LWWMBCOdJaWuIYj4uqp6Lqw=s600'},
+  {id:'dq3',t:'dongqing',n:'情人洞',tag:'地形',r:4.6,rc:1117,d:'海蝕洞穿透礁岩，穿越洞口可見湛藍大海，充滿浪漫感的自然奇景。',tip:'漲潮時請勿進入',lat:22.0619,lng:121.5733,url:'https://maps.google.com/?cid=3870986719226763316',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOQj4ItKaZfJrapX4_3NzessyVYOHkJx2hgLtEAffpLw4CE1SPu8Fp1KZVBbXFb0uilii99XflrOfXqg_ok5uhBuWaaB0B8XIJ6DbzuwReSV-W29-8uUCJ0lgdN4jIDws17b83f0R38g1n_zQ=s600'},
+  {id:'dq4',t:'dongqing',n:'雙獅岩',tag:'觀星',r:4.6,rc:659,d:'蘭嶼最頂級觀星點，晴天無月夜銀河倒映海面，震撼無比。',tip:'最佳：新月前後、無雲夜',lat:22.0851,lng:121.5673,url:'https://maps.google.com/?cid=10212366213492640037',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM_bqDOAnlOFIdrPqkJ93yptiWn623Bpbb845DVriQTCaz7rFA6N7Aq1OHN9i79vIsk-hcLMvanXCwzk_Gu4iKDjZChzniTdp70CTF54P-bBJDoT6NQBZhXRo-zJUQL3TTeOOwpzweaagGVDqlCyALsXw=s600'},
+  {id:'dq5',t:'dongqing',n:'東清夜市',tag:'夏季限定',r:4.1,rc:864,d:'每年夏季限定，東清灣旁有串燒、飛魚料理、手工藝品攤位，是島上最熱鬧的夜間場景。',tip:'約 18:30 開始',lat:22.0580,lng:121.5655,url:'https://maps.google.com/?cid=12681713332252103118',img:''},
+  // 野銀
+  {id:'yy1',t:'yeyin',n:'野銀冷泉',tag:'必去',r:4.6,rc:1496,d:'天然湧泉與藍海交融，細緻白沙配清涼冷泉，是蘭嶼最療癒的秘境，適合親子戲水。',tip:'水溫約 22°C，沁涼消暑',lat:22.0334,lng:121.5766,url:'https://maps.google.com/?cid=4985308003037042214',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZON7g4fPU2Un_4dwDWq6ryAxs5loble7gfrAPWnoEQ-t9rWx2wqOaHY4D-xmOJu80Ym2iedo7nBXoBgodmIH5Flc9YMYcdWQomHVzFTki56ofuvxOhhxvx-ggNI22gymvGf2U4GnNmo7m0gaQ=s600'},
+  {id:'yy2',t:'yeyin',n:'野銀地下屋',tag:'文化必去',r:4.6,rc:186,d:'達悟族為防颱風建的傳統半地下式建築，台灣世界遺產潛力點，保存最完整的傳統聚落。',tip:'建議參加定點導覽（約 NT$500）',lat:22.0374,lng:121.5677,url:'https://maps.google.com/?cid=14954194464814320621',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMoBWvkpss1psDzA4m4ILjO7zhl3cZzjsH7FwUW4CUz6VHkreg1nK1afoO5wpjdnntT89xnWfF0jfZXA_S_8uha8kb3tXOuiA1GCKqIsI5CGV9wlBVNbBMSfiFZLIEZ_7eQGAT6tF4ZSrFjQw=s600'},
+  // 朗島
+  {id:'ld1',t:'langdao',n:'朗島・拼板舟',tag:'文化',r:4.5,rc:107,d:'六個部落漁場最大，漁港邊停放各色拼板舟，是達悟族海洋文化精髓，旁有文創小舖。',tip:'晨光時拍攝最美',lat:22.0779,lng:121.5295,url:'https://maps.google.com/?cid=17697678833898178957',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPCTjbKs7OfDoS0bCEsxL3EwyfDDKNH1CPO83JJ2Y3JZn1p35ILKZfKDn5X7np6vSzjug_DEDAEPY7s_8iTavTuXOjyoC_MqYjksApF7jxmXW3vrA0Dnue-0ipEgzSXejpKkSlBSkI3pmxdrw=s600'},
+  {id:'ld2',t:'langdao',n:'朗島秘境',tag:'浮潛',r:4.7,rc:734,d:'天然泳池浮潛條件絕佳，清澈海水與奇岩構成，人潮相對較少。',tip:'環島路邊可見入口',lat:22.0812,lng:121.5225,url:'https://maps.google.com/?cid=17173766444739556230',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNNjgYEH6akuy5k0Gl2OOTwQh4xeEiYwlj_J1UcR7C_tuEsu7CoDbyvcXs0V40cDF3UDtM6NPeMaBAtFPPcEHf-F11J105AHNb0fWmgU6xAwPcfQV6uWzo1kr9EzK0oSNmbMrgeV_30o_2Z=s600'},
+  {id:'ld3',t:'langdao',n:'小天池',tag:'健行',r:4.4,rc:47,d:'火山口積水形成的高山湖泊，步行約 20 分鐘，可與大天池串連。',tip:'可與大天池一起走',lat:22.0774,lng:121.5101,url:'https://maps.google.com/?cid=13861725828812076479',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOr47wK-nYxLD_lQmAor146_TUC2CfwFcs5yCVD-Dyjjig0rOB_Di4mFgJPUzRz_totNJx0KHmkSplLrbRCiV8kI8M8PM8TA8AtZHzUHe-sv4BiAlQPDXqoWqzLsPQE42jFuus720b6W8eO=s600'},
+  // 椰油
+  {id:'yo1',t:'yeyou',n:'開元港',tag:'交通',r:4.3,rc:99,d:'蘭嶼主要進出門戶，後壁湖船班停靠，周邊有租車與補給。',tip:'下船後先加油再出發',lat:22.0584,lng:121.5082,url:'https://maps.google.com/?cid=7457462604908287105',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOO5NiVgA4PdIGr_18Rfu1egjeMlJtBcYtW5cOnVfseCPF3hx-7WRJ26SfArum7PrjCNT0BQ4qZmM2gt7bv51Stn2hWOJRTJBa1uNJdjFYTaemDHAGjSU0V3qdomUSmNbioPh_UVvELerYa-w=s600'},
+  {id:'yo2',t:'yeyou',n:'椰油國小',tag:'必拍',r:null,rc:null,d:'面向太平洋，操場與大海連成一線，拼板舟造型司令台是島上最知名的 IG 打卡點。',tip:'放學後或週末假日開放',lat:22.0454,lng:121.5176,url:'https://maps.google.com/?cid=16657657472315328156',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPhAifFZIApzT0QV4v5qrC9rho-glJm1syTDnF0sH-LPULZrf1O2IjiC5BlIGJR1LbGofKYI7Q-wGkObDjTEhTlrLIIBpFxNNtvswkNOY7il0nBm0Rs4msf4YAqChlYegqVEfX3HCC-6iPN4hU=s600'},
+  {id:'yo3',t:'yeyou',n:'椰油教會',tag:'建築',r:4.7,rc:21,d:'融合達悟族圖騰的特色教堂，彩色玻璃窗描繪飛魚與海洋，展現文化融合之美。',tip:'椰油部落中心',lat:22.0510,lng:121.5127,url:'https://maps.google.com/?cid=6917148205310790439',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMTWyhfZiip-SE7x8vmN1Ag49tUrCOizSJvmudUldJmSD7cnj2mp0cyoBOPQo0xd-4E2RhhHs5L3jFq_fVhDdQNDmG2jC2-yTuMlQhKJqPxK3HTRdZNfoww5nIbV45uvNh1DJ3J9EDPBAD8hw=s600'},
+  {id:'yo4',t:'yeyou',n:'蘭嶼燈塔',tag:'景觀',r:4.4,rc:113,d:'台灣最高燈塔，視野遼闊，可俯瞰椰油灣與太平洋，無法入內但外觀絕佳。',tip:'山路陡，建議停車步行',lat:22.0809,lng:121.5031,url:'https://maps.google.com/?cid=11990456065625356155',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMOVigns-Wz6JPpb5xKae8M7HRGlyOy7HNTMow0uKmxnVhukUNyV0fk2R-wXHQNBDIuqaRD_y-4_nmTQTQIDfm0ihyW4ZLXnBZ4ahSV6rg6bJxsj3C24fMTjMz-zhAtlWnDtaAz75IJdHZGJAw=s600'},
+  // 漁人
+  {id:'yr1',t:'yuren',n:'蘭嶼文物館',tag:'文化',r:4.1,rc:536,d:'收藏達悟族傳統器具、服飾、拼板舟模型，是認識蘭嶼歷史文化最完整的室內場所。',tip:'週一休館，雨天備案首選',lat:22.0260,lng:121.5392,url:'https://maps.google.com/?cid=11964889175122317808',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNc30yd-9N9w_chx35Uot4bRM37V5_mrRbVNqQGY1ApCWzwcPtkBQY0oIyGALqmKQ72H0iyvHXBEE-58qgBSL7MMUqzZM_veWtoRQ_4bXBHF8sK2mXWEzYrm4aEnG9EfQFEWEEFeHjhlGUxiw=s600'},
+  // 紅頭
+  {id:'ht1',t:'hongtou',n:'青青草原',tag:'必去',r:4.7,rc:1719,d:'俯瞰八代灣與整片太平洋，夕陽時天空燃燒成金橙色，是蘭嶼最浪漫的景緻。',tip:'最佳：傍晚 17:30–19:00',lat:22.0041,lng:121.5710,url:'https://maps.google.com/?cid=1562741712996110462',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOI_3c9cr5vwqRZzPCt5cilmMc7htfWjqELw8h4mxzGMYZMjQohLD43LHINYk7K-N85N_gS6RhUFTDP_ZWPh0NTqPI8e1DzjJ-k8nLVCKnCAZMTYJMXbL-qzbvS3KmCMU-IYxxh8m1k4iWSKV4=s600'},
+  {id:'ht2',t:'hongtou',n:'八代灣',tag:'文化聖地',r:4.5,rc:265,d:'每年飛魚祭首發地點，達悟族最神聖的漁場，灣內停放大量拼板舟，浮潛條件絕佳。',tip:'勿觸碰、拍攝拼板舟',lat:22.0249,lng:121.5532,url:'https://maps.google.com/?cid=7956381831509118947',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM5Qn-3dOSGzokRC_OTcDgyx8bocDg2r2Rx8xd9zLQ6rZBBKwy70x6IB7ibbapJQYGbmvvwPfeEFWyZ8lOyhBdgWf9ot0meZ4d-edkMLaTj3ix25WpmI7gtzLV-8WZi0doSSBUyWUAqI9BODG4=s600'},
+  {id:'ht3',t:'hongtou',n:'大天池',tag:'健行',r:4.6,rc:471,d:'火山口積水形成的神秘高山湖泊，海拔約 548m，步行約 40 分鐘，霧氣繚繞有仙境感。',tip:'建議穿防滑鞋，山路濕滑',lat:22.0209,lng:121.5727,url:'https://maps.google.com/?cid=12252549111322588710',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPU7OkV6iYitdc0Zw7bYqrr7x5UYP0KPgDXrEkkoEzmVxZuHVztybBBzgf1GMpnmtkFBmWVyh74B-bnjctM0vn_F_7r5IUnAQGmf5XMqvaJiuSAWvsaIMi9TlxOsWGvVkAec0U5yvmcxM9t=s600'},
+  {id:'ht4',t:'hongtou',n:'蘭嶼氣象站',tag:'觀景',r:4.8,rc:180,d:'制高點氣象站，視野可達小蘭嶼，是隱藏版觀星與日出好地點。',tip:'停機車在山腳步行上去',lat:22.0372,lng:121.5586,url:'https://maps.google.com/?cid=11421296700053039673',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMkcnTgeCyhHrMiojM0HvqSld9gUX_5HLAMbX4oEO2wwEyZLRxLjB1u0D6A4gJ_1yp3BhwTVU4FuCbvccY3mTGqK96mGAMRVb0CFGQTB1HR1hjdYANJyLKyfIV_KDwrUh13jVgXhWQZxlxsVQ=s600'},
+  {id:'ht5',t:'hongtou',n:'老人岩',tag:'地形',r:4.6,rc:89,d:'礁岩輪廓形似凝望大海的老人側臉，不同光線下各有千秋。',tip:'紅頭南側海岸',lat:22.0036,lng:121.5723,url:'https://maps.google.com/?cid=4511052456031845102',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMKvQoi4OXtDQX3CqYZ19lmQMrSCfaqGBwYvHYRn1pC1Y9w8PkApSzjBFaIvQOVDOHEYCwSHbQ49M5armMMKIgFE-GAyz7XwED5WnjFSeJ3d_W_6l1kMCWQXZAoMusUHvw-_CXr7vQ8v73jAA=s600'},
+  {id:'ht6',t:'hongtou',n:'龍頭岩',tag:'地形',r:4.4,rc:548,d:'形似龍頭昂首的巨大礁岩，蘭嶼南端代表性地標，清晨光影最為迷人。',tip:'環島公路南端',lat:22.0019,lng:121.5884,url:'https://maps.google.com/?cid=17151552898402370986',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZP4b8SoMh_2wbLRnIX7lv5Tsq7Zwm1vwmXdPZl5s7v44KQsNd_dV1yCx61rd7J01t33M6t48Lem-YhZMLn3ECBcD3eWRoiQXHJhHAbVXouKIpLxB5NsPazMu4Ut8mBSY3KWkaLvUTy8NmL9-H0=s600'},
+  // IG打卡
+  {id:'ig1',t:'ig',n:'東清秘境',tag:'IG熱門',r:4.8,rc:320,d:'清澈碧藍天然海池，陽光照射下如寶石般閃耀，游泳浮潛跳水皆宜，婚紗外拍熱點。',tip:'住東清步行即可抵達！',lat:22.0545,lng:121.5698,url:'https://maps.google.com/maps?q=東清秘境+蘭嶼',img:''},
+  {id:'ig2',t:'ig',n:'舊蘭嶼燈塔（小燈塔）',tag:'IG熱門',r:4.5,rc:210,d:'白色小燈塔矗立礁石上，背景是湛藍大海與開元港，怎麼拍都好看，下船即達。',tip:'椰油開元港旁，步行 3 分鐘',lat:22.0612,lng:121.5040,url:'https://maps.google.com/maps?q=舊蘭嶼燈塔',img:''},
+  {id:'ig3',t:'ig',n:'貝殼沙灘',tag:'秘境',r:4.6,rc:98,d:'細緻貝殼碎砂海灘配上壯觀海蝕地形，隱藏在環島公路邊，知道的人才找得到的秘境。',tip:'環島公路旁留意小路入口',lat:22.0720,lng:121.5480,url:'https://maps.google.com/maps?q=蘭嶼貝殼沙灘',img:''},
+  {id:'ig4',t:'ig',n:'蘭嶼旅人・Rover',tag:'網美酒吧',r:4.6,rc:430,d:'紅頭部落網美系海景酒吧餐廳，坐擁無敵太平洋視角，傍晚喝一杯看夕陽，IG必拍。',tip:'傍晚前往，與青青草原可連排',lat:22.0230,lng:121.5510,url:'https://maps.google.com/maps?q=蘭嶼旅人Rover',img:''},
+  // 美食
+  {id:'fd1',t:'food',n:'漂流木餐廳',tag:'飛魚料理',r:4.4,rc:380,d:'島上知名餐廳，必點奶油飛魚卵燉飯、整隻炸飛魚，飲品試試「芋仙芋死」和海鹽咖啡。',tip:'11:00–14:00 / 18:00–21:00，週日休',hours:'11:00–14:00｜18:00–21:00（週日休）',lat:22.0565,lng:121.5660,url:'https://maps.google.com/maps?q=漂流木餐廳+蘭嶼',img:''},
+  {id:'fd2',t:'food',n:'人魚和貓',tag:'簡餐冰沙',r:4.5,rc:290,d:'位於東清，香草雞腿排超人氣，夏日冰沙消暑必喝，還有貓咪陪你用餐。',tip:'11:00–14:30 / 17:30–00:00',hours:'11:00–14:30｜17:30–00:00',lat:22.0572,lng:121.5648,url:'https://maps.google.com/maps?q=人魚和貓+蘭嶼',img:''},
+  {id:'fd3',t:'food',n:'阿力給早餐',tag:'限量飛魚飯糰',r:4.7,rc:215,d:'紅頭部落必吃早餐！每天限量 60 顆蘭嶼飛魚飯糰，一人限購 1 顆，超人氣秒殺。',tip:'需早起排隊，售完為止',hours:'早晨限定，售完即止',lat:22.0158,lng:121.5618,url:'https://maps.google.com/maps?q=阿力給早餐+蘭嶼',img:''},
+  {id:'fd4',t:'food',n:'小七冰店',tag:'海景冰品',r:4.5,rc:178,d:'開元港旁三樓露天座位，視野遼闊，推薦芋頭雪花冰，料多綿密，海景第一排吃冰。',tip:'椰油 7-11 旁樓梯上三樓',hours:'視當日營業為主',lat:22.0588,lng:121.5075,url:'https://maps.google.com/maps?q=小七冰店+蘭嶼',img:''},
+  {id:'fd5',t:'food',n:'262 Bar',tag:'飛魚炒飯',r:4.5,rc:156,d:'野銀部落人氣餐廳酒吧，飛魚炒飯數一數二好吃，氛圍輕鬆，島上少見的特色小吧。',tip:'野銀部落，建議提早到',hours:'依當日公告',lat:22.0355,lng:121.5720,url:'https://maps.google.com/maps?q=262bar+蘭嶼',img:''},
+  {id:'fd6',t:'food',n:'游麵子',tag:'炸雞排',r:4.4,rc:122,d:'不想吃飛魚？試試手掌大炸雞排，外皮香酥肉厚多汁。5–10 月限定有炸飛魚和炸波波蛋。',tip:'淺粉色磁磚民宅，仔細找',hours:'視當日營業為主',lat:22.0490,lng:121.5140,url:'https://maps.google.com/maps?q=游麵子+蘭嶼',img:''},
+  {id:'fd7',t:'food',n:'迦南園',tag:'拼板舟主題',r:4.5,rc:198,d:'外觀兩艘拼板舟造型超吸睛，飛魚滷肉飯、飛魚卵蓋飯，吃飽還可安排文化導覽體驗。',tip:'可搭配文化導覽體驗',hours:'視當日營業為主',lat:22.0235,lng:121.5500,url:'https://maps.google.com/maps?q=迦南園+蘭嶼',img:''},
+];
 
-function storageKey() { return `meal_orders_${currentUser}`; }
-function save() { localStorage.setItem(storageKey(), JSON.stringify(orders)); }
-function load() { orders = JSON.parse(localStorage.getItem(storageKey()) || '[]'); }
+const CENTERS={all:[22.044,121.547,12],dongqing:[22.068,121.570,14],yeyin:[22.035,121.572,14],langdao:[22.080,121.529,14],yeyou:[22.053,121.513,14],yuren:[22.028,121.536,14],hongtou:[22.017,121.565,14],ig:[22.044,121.547,12],food:[22.044,121.547,12]};
 
-// ── LOGIN ─────────────────────────────────────────────────
-const savedUser = localStorage.getItem('meal_current_user');
-if (savedUser) { currentUser = savedUser; showApp(savedUser); }
-document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+let curTribe='all',curId=null,curMapsUrl='';
+const markers={};
 
-function doLogin() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) { document.getElementById('loginError').textContent = '請輸入名稱'; return; }
-  currentUser = name;
-  localStorage.setItem('meal_current_user', name);
-  showApp(name);
-}
+// MAP
+const map=L.map('map',{zoomControl:true,preferCanvas:true}).setView([22.044,121.547],12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
+  maxZoom:19,subdomains:'abcd'
+}).addTo(map);
 
-function showApp(name) {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('userLabel').textContent = name;
-  load();
-  render();
-  updateNotifUI();
-  scheduleNotif();
-}
-
-function doLogout() {
-  localStorage.removeItem('meal_current_user');
-  currentUser = null; orders = [];
-  if(notifTimer) clearTimeout(notifTimer);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('nameInput').value = '';
-  document.getElementById('loginError').textContent = '';
-}
-
-// ── NOTIFICATION ──────────────────────────────────────────
-function getNotifEnabled() { return localStorage.getItem('meal_notif') === '1'; }
-function setNotifEnabled(v) { localStorage.setItem('meal_notif', v ? '1' : '0'); }
-
-async function toggleNotif() {
-  if (!('Notification' in window)) { showToast('此瀏覽器不支援通知'); return; }
-
-  if (Notification.permission === 'denied') {
-    showToast('請在瀏覽器設定中允許通知權限');
-    return;
+function makeIcon(t,active){
+  const c=TC[t].color;
+  const s=active?42:30;
+  const isSquare=t==='food'||t==='ig';
+  const em=t==='food'?'🍽':t==='ig'?'📸':'';
+  let shape;
+  if(isSquare){
+    shape=`<rect x="4" y="4" width="32" height="32" rx="8" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/>
+    <text x="20" y="28" text-anchor="middle" font-size="18" fill="white">${em}</text>`;
+  } else {
+    shape=`<circle cx="20" cy="20" r="14" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/>
+    <circle cx="20" cy="20" r="${active?6:4}" fill="white"/>`;
   }
+  return L.divIcon({
+    html:`<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 40 40">${shape}</svg>`,
+    className:'',iconSize:[s,s],iconAnchor:[s/2,s/2],popupAnchor:[0,-s/2+4]
+  });
+}
 
-  if (!getNotifEnabled()) {
-    // 開啟
-    const perm = await Notification.requestPermission();
-    if (perm === 'granted') {
-      setNotifEnabled(true);
-      scheduleNotif();
-      showToast('已開啟每日 08:30 午餐提醒 🔔');
-    } else {
-      showToast('未取得通知權限');
+SPOTS.forEach(s=>{
+  const m=L.marker([s.lat,s.lng],{icon:makeIcon(s.t,false)}).addTo(map);
+  m.on('click',()=>selectSpot(s.id,false));
+  markers[s.id]=m;
+});
+
+function selectSpot(id,fly=true){
+  // reset prev marker
+  if(curId&&markers[curId]){
+    const prev=SPOTS.find(x=>x.id===curId);
+    if(prev) markers[curId].setIcon(makeIcon(prev.t,false));
+  }
+  curId=id;
+  const s=SPOTS.find(x=>x.id===id);
+  markers[id].setIcon(makeIcon(s.t,true));
+  // sync list
+  document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
+  const li=document.getElementById('li-'+id);
+  if(li){li.classList.add('active');li.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  // fly map
+  if(fly){
+    map.flyTo([s.lat,s.lng],15,{animate:true,duration:0.75});
+  }
+  // open detail panel
+  showDetail(s);
+}
+
+function showDetail(s){
+  const c=TC[s.t];
+  // image
+  const imgWrap=document.getElementById('detailImgWrap');
+  if(s.img){
+    imgWrap.innerHTML=`<img class="detail-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=detail-img-ph>${c.emoji}</div>'"><button class="detail-close" onclick="closeDetail()">✕</button>`;
+  } else {
+    imgWrap.innerHTML=`<div class="detail-img-ph" style="background:linear-gradient(135deg,${c.color}33,${c.color}66)">${c.emoji}</div><button class="detail-close" onclick="closeDetail()">✕</button>`;
+  }
+  document.getElementById('detailBadge').textContent=c.emoji+' '+c.name;
+  document.getElementById('detailBadge').style.cssText=`background:${c.bg};color:${c.text}`;
+  document.getElementById('detailName').textContent=s.n;
+  document.getElementById('detailRating').textContent=s.r?`⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）`:'';
+  document.getElementById('detailDesc').textContent=s.d;
+  document.getElementById('detailTip').textContent='💡 '+s.tip;
+  document.getElementById('detailHours').textContent=s.hours?'🕐 '+s.hours:'';
+  const btn=document.getElementById('detailMapsBtn');
+  btn.style.background=c.color;
+  curMapsUrl=s.url;
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open');
+  if(curId&&markers[curId]){
+    const s=SPOTS.find(x=>x.id===curId);
+    if(s) markers[curId].setIcon(makeIcon(s.t,false));
+  }
+  curId=null;
+  document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
+}
+
+function openMaps(){
+  window.open(curMapsUrl,'_blank');
+}
+
+// TABS
+const TRIBE_ORDER=['dongqing','yeyin','langdao','yeyou','yuren','hongtou','ig','food'];
+document.getElementById('tribeTabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.tribe-tab');
+  if(!tab) return;
+  curTribe=tab.dataset.tribe;
+  closeDetail();
+  document.querySelectorAll('.tribe-tab').forEach(t=>{
+    t.classList.remove('active');
+    t.style.background='';t.style.color='';t.style.borderColor='';
+  });
+  tab.classList.add('active');
+  if(curTribe!=='all'){
+    tab.style.background=TC[curTribe]?.color||'#555';
+    tab.style.color='#fff';
+    tab.style.borderColor='transparent';
+  }
+  SPOTS.forEach(s=>{
+    if(curTribe==='all'||s.t===curTribe) map.addLayer(markers[s.id]);
+    else map.removeLayer(markers[s.id]);
+  });
+  const[la,ln,z]=CENTERS[curTribe]||CENTERS.all;
+  map.flyTo([la,ln],z,{animate:true,duration:0.65});
+  renderList();
+});
+
+function renderList(){
+  const filtered=curTribe==='all'?SPOTS:SPOTS.filter(s=>s.t===curTribe);
+  document.getElementById('spotCount').textContent=filtered.length+' 個';
+  const el=document.getElementById('spotList');el.innerHTML='';
+  const groups={};
+  filtered.forEach(s=>(groups[s.t]=groups[s.t]||[]).push(s));
+  const order=curTribe==='all'?TRIBE_ORDER:[curTribe];
+  order.forEach(tk=>{
+    if(!groups[tk]) return;
+    if(curTribe==='all'){
+      const sep=document.createElement('div');
+      sep.className='tribe-sep';sep.style.color=TC[tk].color;
+      sep.innerHTML=`<span>${TC[tk].emoji}</span><span>${TC[tk].name}</span>`;
+      el.appendChild(sep);
     }
-  } else {
-    // 關閉
-    setNotifEnabled(false);
-    if(notifTimer) { clearTimeout(notifTimer); notifTimer = null; }
-    showToast('已關閉提醒');
-  }
-  updateNotifUI();
-}
-
-function updateNotifUI() {
-  const enabled = getNotifEnabled() && Notification.permission === 'granted';
-  const supported = 'Notification' in window;
-
-  // header button
-  const btn = document.getElementById('notifBtn');
-  btn.textContent = enabled ? '🔔' : '🔕';
-  btn.className = 'hbtn' + (enabled ? ' notif-on' : '');
-  btn.title = enabled ? '已開啟每日08:30提醒（點擊關閉）' : '開啟每日08:30午餐提醒';
-
-  // drawer
-  const status = document.getElementById('notifStatus');
-  const drawerBtn = document.getElementById('notifDrawerBtn');
-  if (!supported) {
-    status.textContent = '此瀏覽器不支援推播通知';
-    status.className = 'notif-status';
-    drawerBtn.style.display = 'none';
-  } else if (Notification.permission === 'denied') {
-    status.textContent = '通知已被封鎖，請到瀏覽器設定 → 網站設定 → 通知，手動允許此網站';
-    status.className = 'notif-status denied';
-    drawerBtn.style.display = 'none';
-  } else if (enabled) {
-    status.textContent = '✓ 已開啟，每天 08:30 會提醒你今日午餐內容';
-    status.className = 'notif-status granted';
-    drawerBtn.textContent = '關閉提醒';
-  } else {
-    status.textContent = '尚未開啟，點下方按鈕開啟每日提醒';
-    status.className = 'notif-status';
-    drawerBtn.textContent = '開啟提醒';
-  }
-}
-
-function scheduleNotif() {
-  if(notifTimer) clearTimeout(notifTimer);
-  if(!getNotifEnabled() || Notification.permission !== 'granted') return;
-
-  const now = new Date();
-  const target = new Date();
-  target.setHours(8, 30, 0, 0);
-  if(target <= now) target.setDate(target.getDate() + 1); // 已過今天8:30，排明天
-
-  const ms = target - now;
-  notifTimer = setTimeout(() => {
-    fireNotif();
-    scheduleNotif(); // 排下一天
-  }, ms);
-}
-
-function fireNotif() {
-  if(Notification.permission !== 'granted') return;
-  const today = todayStr();
-  const todayOrders = orders.filter(o => o.meal_date === today);
-
-  let title, body;
-  if (todayOrders.length === 0) {
-    title = '🍱 今天沒有午餐訂單';
-    body = '記得自己安排午餐喔！';
-  } else {
-    title = `🍱 今日午餐：${todayOrders[0].restaurant}`;
-    body = todayOrders.map(o => `${o.item}　NT$${o.price}`).join('\n');
-  }
-
-  new Notification(title, {
-    body,
-    icon: 'https://cdn.jsdelivr.net/npm/twemoji@14/assets/72x72/1f371.png',
-    badge: 'https://cdn.jsdelivr.net/npm/twemoji@14/assets/72x72/1f371.png',
-    tag: 'meal-reminder',
-    renotify: true,
+    groups[tk].forEach(s=>{
+      const isSquare=s.t==='food'||s.t==='ig';
+      const item=document.createElement('div');
+      item.className='spot-item'+(curId===s.id?' active':'');
+      item.id='li-'+s.id;
+      item.innerHTML=`<div class="spot-dot${isSquare?' square':''}" style="background:${TC[s.t].color}"></div>
+        <div><div class="spot-name">${s.n}</div>
+        <span class="spot-tag" style="background:${TC[s.t].bg};color:${TC[s.t].text}">${s.tag}</span></div>`;
+      item.onclick=()=>selectSpot(s.id);
+      el.appendChild(item);
+    });
   });
 }
 
-function testNotif() {
-  if(Notification.permission !== 'granted') {
-    showToast('請先開啟通知權限');
-    return;
-  }
-  fireNotif();
-  showToast('已發送測試通知');
-}
-
-// ── DRAWER ────────────────────────────────────────────────
-function openDrawer() {
-  updateDataInfo();
-  updateNotifUI();
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawerOverlay').classList.add('open');
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawerOverlay').classList.remove('open');
-}
-function updateDataInfo() {
-  const total = orders.reduce((s,o)=>s+o.price,0);
-  document.getElementById('dataInfo').textContent =
-    `共 ${orders.length} 筆訂單・總金額 NT$${total}\n儲存在此瀏覽器 localStorage，換電腦前請先匯出備份。`;
-}
-
-// ── JSON 匯出入 ───────────────────────────────────────────
-function exportJson() {
-  const data = { user: currentUser, exported: new Date().toISOString(), orders };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `meal-orders-${currentUser}-${todayStr()}.json`;
-  a.click();
-  showToast('已匯出 ✓');
-}
-
-function loadJsonFile(e) {
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      const imported = Array.isArray(data) ? data : (data.orders || []);
-      if(!imported.length) { showToast('找不到訂單資料'); return; }
-      if(!confirm(`確定匯入 ${imported.length} 筆訂單？（會覆蓋現有資料）`)) return;
-      orders = imported; save(); render(); updateDataInfo();
-      showToast(`已匯入 ${imported.length} 筆 ✓`);
-    } catch { showToast('JSON 格式有誤'); }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-}
-
-function clearAllData() {
-  if(!confirm(`確定刪除全部 ${orders.length} 筆訂單？`)) return;
-  orders = []; save(); render(); updateDataInfo();
-  showToast('已清除');
-}
-
-// ── TABS ──────────────────────────────────────────────────
-function switchMainTab(tab) {
-  ['upcoming','calendar','stats'].forEach(t => {
-    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
-    document.getElementById(t+'Pane').style.display = t===tab ? '' : 'none';
-  });
-  if(tab==='calendar') renderCalendar();
-  if(tab==='stats') renderStats();
-}
-
-// ── RENDER ────────────────────────────────────────────────
-function render() {
-  renderUpcoming();
-  const activeTab = document.querySelector('.tab-nav-btn.active').id.replace('tab','').toLowerCase();
-  if(activeTab==='calendar') renderCalendar();
-  if(activeTab==='stats') renderStats();
-}
-
-function renderUpcoming() {
-  const today = todayStr();
-  const upcoming = orders.filter(o=>o.meal_date>=today).sort((a,b)=>a.meal_date.localeCompare(b.meal_date));
-  document.getElementById('badgeUpcoming').textContent = upcoming.length;
-  const pane = document.getElementById('upcomingPane');
-  if(!upcoming.length){pane.innerHTML=`<div class="empty-state"><div class="empty-icon">🗓</div><p>沒有即將到來的訂單</p></div>`;return;}
-  const sections=[];let cur=null;
-  upcoming.forEach(o=>{const sec=getSectionLabel(o.meal_date,today);if(!cur||cur.label!==sec){if(cur)sections.push(cur);cur={label:sec,items:[],total:0};}cur.items.push(o);cur.total+=o.price;});
-  if(cur)sections.push(cur);
-  let html='';
-  sections.forEach(sec=>{
-    html+=`<div class="section-head"><div class="section-label">${sec.label}</div><div class="section-total">NT$${sec.total}</div></div>`;
-    sec.items.forEach(o=>{html+=renderCard(o,today);});
-  });
-  pane.innerHTML=html;
-}
-
-function renderCalendar() {
-  const pane=document.getElementById('calendarPane');
-  const byDate={};
-  orders.forEach(o=>{if(!byDate[o.meal_date])byDate[o.meal_date]=[];byDate[o.meal_date].push(o);});
-  const firstDay=new Date(calYear,calMonth,1),lastDay=new Date(calYear,calMonth+1,0);
-  const startDow=firstDay.getDay();
-  const totalCells=Math.ceil((startDow+lastDay.getDate())/7)*7;
-  let grid='';
-  ['日','一','二','三','四','五','六'].forEach(d=>{grid+=`<div class="cal-dow">${d}</div>`;});
-  for(let i=0;i<totalCells;i++){
-    const d=new Date(calYear,calMonth,i-startDow+1),ds=fmtDate(d);
-    const isM=d.getMonth()===calMonth,hasO=byDate[ds]&&byDate[ds].length>0,isSel=calSelected===ds;
-    const cls=['cal-cell',!isM&&'other-month',hasO&&'has-order',isSel&&'selected'].filter(Boolean).join(' ');
-    const dots=hasO?`<div class="cal-dots">${byDate[ds].slice(0,3).map(()=>'<div class="cal-dot"></div>').join('')}</div>`:'';
-    grid+=`<div class="${cls}" ${hasO?`onclick="selectCalDate('${ds}')"`:''}><div class="cal-day">${d.getDate()}</div>${dots}</div>`;
-  }
-  let detail='';
-  if(calSelected&&byDate[calSelected]){
-    const d=new Date(calSelected+'T12:00'),dayOs=byDate[calSelected],tot=dayOs.reduce((s,o)=>s+o.price,0);
-    detail=`<div class="cal-detail"><div class="cal-detail-head">${d.getMonth()+1}月${d.getDate()}日 週${WD[d.getDay()]}・NT$${tot}</div>${dayOs.map(o=>`<div class="cal-detail-item"><div><div class="cal-detail-name">${escHtml(o.item)}</div><div class="cal-detail-rest">${escHtml(o.restaurant)}</div></div><div style="display:flex;align-items:center;gap:7px"><div class="cal-detail-price">$${o.price}</div><button class="btn-icon" onclick="openOrderModal('${o.id}')">✏️</button><button class="btn-icon danger" onclick="doDelete('${o.id}')">🗑</button></div></div>`).join('')}</div>`;
-  }
-  pane.innerHTML=`<div class="cal-header"><div class="cal-month-label">${calYear}年${calMonth+1}月</div><div class="cal-nav"><button class="cal-nav-btn" onclick="calNav(-1)">‹</button><button class="cal-nav-btn" onclick="calNavToday()">今</button><button class="cal-nav-btn" onclick="calNav(1)">›</button></div></div><div class="cal-grid">${grid}</div>${detail}`;
-}
-
-function renderStats() {
-  const pane=document.getElementById('statsPane');
-  const past=orders.filter(o=>o.meal_date<=todayStr());
-  if(!past.length){pane.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><p>還沒有歷史資料</p></div>`;return;}
-  const total=past.reduce((s,o)=>s+o.price,0),avg=Math.round(total/past.length);
-  const rMap={};past.forEach(o=>{if(!rMap[o.restaurant])rMap[o.restaurant]={count:0,spend:0};rMap[o.restaurant].count++;rMap[o.restaurant].spend+=o.price;});
-  const rList=Object.entries(rMap).sort((a,b)=>b[1].count-a[1].count),maxC=rList[0][1].count;
-  let html=`<div class="stats-grid"><div class="stat-card"><div class="stat-num">${past.length}</div><div class="stat-label">歷史訂單</div></div><div class="stat-card"><div class="stat-num">${rList.length}</div><div class="stat-label">去過店家</div></div><div class="stat-card"><div class="stat-num">${avg}</div><div class="stat-label">平均每餐 NT$</div></div></div><div class="section-head"><div class="section-label">常去店家排行</div><div class="section-total">共 ${rList.length} 間</div></div><div class="restaurant-list">`;
-  rList.forEach(([name,{count,spend}],i)=>{
-    const pct=Math.round(count/maxC*100),rank=i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
-    html+=`<div class="restaurant-row"><div class="restaurant-rank${i<3?' top':''}">${rank}</div><div class="restaurant-info"><div class="restaurant-name">${escHtml(name)}</div><div class="restaurant-count">訂過 ${count} 次</div></div><div class="restaurant-bar-wrap"><div class="restaurant-bar-bg"><div class="restaurant-bar-fill" style="width:${pct}%"></div></div></div><div class="restaurant-spend">NT$${spend}</div></div>`;
-  });
-  html+='</div>';pane.innerHTML=html;
-}
-
-function renderCard(o,today){
-  const d=new Date(o.meal_date+'T12:00'),isT=o.meal_date===today;
-  let dlStr='',urgent=false;
-  if(o.deadline){const dl=new Date(o.deadline);urgent=(dl-new Date())<3*3600000&&dl>new Date();dlStr=`${dl.getMonth()+1}/${dl.getDate()} ${String(dl.getHours()).padStart(2,'0')}:${String(dl.getMinutes()).padStart(2,'0')} 截止`;}
-  const chips=o.notes&&o.notes.length?`<div class="note-items">${o.notes.map(n=>`<span class="note-chip">${escHtml(n.item)}・$${n.price}</span>`).join('')}</div>`:'';
-  const tp=isT?`<span class="today-pill">今天</span>`:'';
-  return`<div class="order-card"><div class="card-main"><div class="card-date${isT?' today-date':''}"><div class="month">${d.getMonth()+1}月</div><div class="day-num">${d.getDate()}</div><div class="weekday">週${WD[d.getDay()]}</div></div><div class="card-body"><div class="card-restaurant">${escHtml(o.restaurant)}${tp}</div><div class="card-item">${escHtml(o.item)}</div>${dlStr?`<div class="deadline-badge${urgent?' urgent':''}">⏰ ${dlStr}</div>`:''}</div><div class="card-right"><div class="price-tag">$${o.price}</div><div class="card-actions"><button class="btn-icon" onclick="openOrderModal('${o.id}')">✏️</button><button class="btn-icon danger" onclick="doDelete('${o.id}')">🗑</button></div></div></div>${chips}</div>`;
-}
-
-// ── HELPERS ───────────────────────────────────────────────
-function selectCalDate(d){ calSelected=calSelected===d?null:d; renderCalendar(); }
-function calNav(dir){ calMonth+=dir; if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;} calSelected=null; renderCalendar(); }
-function calNavToday(){ const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); calSelected=null; renderCalendar(); }
-function doDelete(id){ if(!confirm('確定要刪除？'))return; orders=orders.filter(o=>o.id!==id); save(); render(); showToast('已刪除'); }
-
-function getSectionLabel(ds,today){
-  const d=new Date(ds+'T12:00'),t=new Date(today+'T12:00'),diff=Math.round((d-t)/86400000);
-  if(ds===today)return'今天';if(diff===1)return'明天';
-  const mon=new Date(t);mon.setDate(t.getDate()-((t.getDay()||7)-1));const sun=new Date(mon);sun.setDate(mon.getDate()+6);
-  if(d>=mon&&d<=sun)return'本週';
-  const nm=new Date(mon);nm.setDate(mon.getDate()+7);const ns=new Date(nm);ns.setDate(nm.getDate()+6);
-  if(d>=nm&&d<=ns)return'下週';
-  return`${d.getFullYear()}年${d.getMonth()+1}月`;
-}
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
-function todayStr(){ return fmtDate(new Date()); }
-function fmtDate(d){ return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ── ORDER MODAL ───────────────────────────────────────────
-function openOrderModal(id){
-  editingId=id||null;
-  document.getElementById('orderModalTitle').textContent=id?'編輯訂單':'新增訂單';
-  document.getElementById('noteEntries').innerHTML='';
-  if(id){const o=orders.find(x=>x.id===id);document.getElementById('f_meal_date').value=o.meal_date;document.getElementById('f_deadline').value=o.deadline||'';document.getElementById('f_restaurant').value=o.restaurant;document.getElementById('f_item').value=o.item;document.getElementById('f_price').value=o.price;(o.notes||[]).forEach(n=>addNoteEntry(n.item,n.price));}
-  else{['f_meal_date','f_deadline','f_restaurant','f_item','f_price'].forEach(i=>document.getElementById(i).value='');}
-  document.getElementById('orderModal').classList.add('open');
-}
-function closeOrderModal(){ document.getElementById('orderModal').classList.remove('open'); }
-function addNoteEntry(iv,pv){
-  const div=document.createElement('div');div.className='note-entry';
-  div.innerHTML=`<input type="text" placeholder="品項名稱" value="${escHtml(iv||'')}"><input type="number" class="price-input" placeholder="金額" min="0" value="${pv||''}"><button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>`;
-  document.getElementById('noteEntries').appendChild(div);
-}
-function saveOrder(){
-  const meal_date=document.getElementById('f_meal_date').value,deadline=document.getElementById('f_deadline').value;
-  const restaurant=document.getElementById('f_restaurant').value.trim(),item=document.getElementById('f_item').value.trim();
-  const price=parseInt(document.getElementById('f_price').value)||0;
-  if(!meal_date||!restaurant||!item){showToast('請填寫日期、餐廳和餐點');return;}
-  const notes=[];document.querySelectorAll('.note-entry').forEach(row=>{const[a,b]=row.querySelectorAll('input');if(a.value.trim())notes.push({item:a.value.trim(),price:parseInt(b.value)||0});});
-  if(editingId){const idx=orders.findIndex(o=>o.id===editingId);orders[idx]={...orders[idx],meal_date,deadline,restaurant,item,price,notes};showToast('已更新 ✓');}
-  else{orders.push({id:uid(),meal_date,deadline,restaurant,item,price,notes});showToast('已新增 ✓');}
-  save();render();closeOrderModal();
-}
-
-// ── IMPORT ────────────────────────────────────────────────
-function openImport(){ document.getElementById('importText').value='';document.getElementById('previewContent').innerHTML='';document.getElementById('btnConfirmImport').disabled=true;parsedOrders=[];switchImportTab('paste');document.getElementById('importModal').classList.add('open'); }
-function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
-function switchImportTab(tab){ document.getElementById('itabPaste').classList.toggle('active',tab==='paste');document.getElementById('itabPreview').classList.toggle('active',tab==='preview');document.getElementById('ipanePaste').style.display=tab==='paste'?'':'none';document.getElementById('ipanePreview').style.display=tab==='preview'?'':'none'; }
-function parseAndPreview(){
-  const raw=document.getElementById('importText').value;if(!raw.trim()){showToast('請先貼上訂單文字');return;}
-  const{results,errors}=parseOrderText(raw);parsedOrders=results;let html='';
-  errors.forEach(e=>{html+=`<div class="preview-error">⚠️ ${escHtml(e)}</div>`;});
-  if(!results.length&&!errors.length)html='<div class="preview-error">⚠️ 找不到可辨識的訂單</div>';
-  if(results.length){html+=`<div class="preview-label">✓ 成功解析 ${results.length} 筆訂單</div>`;results.forEach(o=>{const d=new Date(o.meal_date+'T12:00');const dl=o.deadline?(()=>{const x=new Date(o.deadline);return`截止 ${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`;})():'（無截止時間）';html+=`<div class="preview-card"><div class="p-head">${d.getMonth()+1}/${d.getDate()} 週${WD[d.getDay()]}　${escHtml(o.restaurant)}</div><div class="p-sub">${escHtml(o.item)}　NT$${o.price}　${dl}</div></div>`;});}
-  document.getElementById('previewContent').innerHTML=html;switchImportTab('preview');document.getElementById('btnConfirmImport').disabled=!results.length;
-}
-function confirmImport(){ if(!parsedOrders.length)return;orders.push(...parsedOrders);save();render();closeImport();showToast(`已匯入 ${parsedOrders.length} 筆 ✓`); }
-
-function parseOrderText(raw){
-  const results=[],errors=[];const text=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();if(!text)return{results,errors};
-  const blocks=text.split(/(?=\d{1,2}\/\d{1,2}\s*[（(]週[一二三四五六日][）)][^\n]*\|)/g).map(b=>b.trim()).filter(Boolean);
-  if(!blocks.length){errors.push('找不到可辨識的訂單格式');return{results,errors};}
-  const y=new Date().getFullYear();
-  for(const block of blocks){try{const lines=block.split('\n').map(l=>l.trim()).filter(Boolean);const hm=lines[0].match(/(\d{1,2})\/(\d{1,2})\s*[（(]週[一二三四五六日][）)]\s*(.+?)\|\s*(\d{1,2})\/(\d{1,2})/);if(!hm){errors.push(`無法解析：「${lines[0].slice(0,30)}」`);continue;}const restaurant=hm[3].trim();const mealDate=`${y}-${String(parseInt(hm[4])).padStart(2,'0')}-${String(parseInt(hm[5])).padStart(2,'0')}`;let deadline='';const dlLine=lines.find(l=>l.includes('截止於')||l.includes('截止:'));if(dlLine){const dm=dlLine.match(/(\d{1,2})\/(\d{1,2})\s*週[一二三四五六日]\s*(\d{2}:\d{2})/);if(dm)deadline=`${y}-${String(parseInt(dm[1])).padStart(2,'0')}-${String(parseInt(dm[2])).padStart(2,'0')}T${dm[3]}`;}const notes=[];let mainItem='',totalPrice=0;const itemLines=lines.filter(l=>!/^\d{1,2}\/\d{1,2}/.test(l)&&!/^(Total|評比|截止|訂單明細|\$|＄)/.test(l)&&!/^\$\s*\d+/.test(l)&&!/^＄\s*\d+/.test(l)&&!/^Total/.test(l)&&/\d+\s*$/.test(l)&&l.length>2&&!/^\s*\d+\s*$/.test(l));for(const il of itemLines){const parts=il.split(/\t+/).map(p=>p.trim()).filter(Boolean);if(!parts.length)continue;const name=parts[0];const nums=il.match(/\d+/g);if(!nums)continue;const price=parseInt(nums[nums.length-1]);notes.push({item:name,price});totalPrice+=price;mainItem=mainItem?mainItem+' + '+name:name;}if(!mainItem){errors.push(`「${restaurant}」找不到餐點`);continue;}results.push({id:uid(),meal_date:mealDate,deadline,restaurant,item:mainItem,price:totalPrice,notes:notes.length>1?notes:[]});}catch(e){errors.push(`解析錯誤：${e.message}`);}}
-  return{results,errors};
-}
-
-function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200); }
-[document.getElementById('orderModal'),document.getElementById('importModal')].forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
+renderList();
 </script>
 </body>
 </html>
