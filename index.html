@@ -2,77 +2,179 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>蘭嶼六大部落 · 景點美食地圖</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>蘭嶼景點美食地圖</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--ocean:#0a3d5c;--teal:#0d7a5f;--sand:#f3ede4;--white:#fff;--text:#1c1c1c;--muted:#6a6a6a;--border:#e0d8ce;--panel:#faf7f3}
-html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;background:var(--sand);color:var(--text)}
-.topbar{background:linear-gradient(135deg,#062d45,#0a3d5c 60%,#0d5c45);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.25)}
-.topbar-title{font-family:'Noto Serif TC',serif;font-size:17px;color:#fff;font-weight:700;letter-spacing:1px;white-space:nowrap}
-.topbar-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;white-space:nowrap}
-.tribe-tabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:9px 14px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
-.tribe-tabs::-webkit-scrollbar{display:none}
-.tribe-tab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;white-space:nowrap;user-select:none}
-.tribe-tab:hover{background:var(--sand)}
-.tribe-tab.active{color:#fff;border-color:transparent}
-.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 91px)}
-.sidebar{width:270px;min-width:270px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--panel)}
-.panel-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
-.panel-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
-.panel-count{font-size:20px;font-weight:500;color:var(--ocean)}
-.spot-list{flex:1;overflow-y:auto;padding:6px}
-.spot-list::-webkit-scrollbar{width:4px}
-.spot-list::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
-.tribe-sep{font-size:10.5px;font-weight:500;padding:10px 10px 3px;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
-.spot-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;border:1.5px solid transparent;margin-bottom:2px;transition:all .15s}
-.spot-item:hover{background:var(--sand)}
-.spot-item.active{background:var(--white);border-color:var(--ocean);box-shadow:0 2px 8px rgba(10,61,92,.1)}
-.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.sdot.sq{border-radius:3px;width:9px;height:9px}
-.sname{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.3}
-.stag{font-size:10px;padding:1px 6px;border-radius:6px;margin-top:3px;display:inline-block;font-weight:500}
-.map-wrap{flex:1;position:relative}
-#map{width:100%;height:100%}
-.detail-panel{width:0;min-width:0;background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease;flex-shrink:0}
-.detail-panel.open{width:260px;min-width:260px}
-.detail-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10}
-.d-img-wrap{position:relative;flex-shrink:0}
-.d-img{width:100%;height:150px;object-fit:cover;display:block}
-.d-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0}
-.d-body{padding:14px 16px;flex:1;overflow-y:auto}
-.d-badge{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;display:inline-block;margin-bottom:8px}
-.d-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
-.d-rating{font-size:12px;color:#9a7200;margin-bottom:10px}
-.d-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px}
-.d-tip{background:var(--sand);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:500;margin-bottom:10px;border-left:3px solid var(--teal);color:#1a5c47}
-.d-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
-.btn-nav{display:block;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:none;width:100%;font-family:inherit}
-.legend{position:absolute;bottom:20px;right:16px;background:rgba(255,255,255,.95);border-radius:12px;padding:10px 14px;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:11.5px;backdrop-filter:blur(4px)}
-.legend-title{font-weight:500;color:var(--ocean);margin-bottom:7px;font-size:11px}
-.l-item{display:flex;align-items:center;gap:7px;margin-bottom:4px;color:var(--text);font-size:11px}
-.l-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.l-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.leaflet-popup-content-wrapper{border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,.18)!important;padding:0!important;overflow:hidden}
-.leaflet-popup-content{margin:0!important;width:0!important;height:0!important;overflow:hidden!important;display:none!important}
-.leaflet-popup-tip-container{display:none}
+:root{
+  --ocean:#0a3d5c;--teal:#0d7a5f;--sand:#f3ede4;
+  --white:#fff;--text:#1c1c1c;--muted:#6a6a6a;--border:#e0d8ce;--panel:#faf7f3;
+}
+html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;background:#000}
 
-.loc-btn{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:900;background:var(--white);border:1px solid var(--border);border-radius:24px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;align-items:center;gap:7px;color:var(--ocean);font-family:inherit;white-space:nowrap;transition:all .2s}
-.loc-btn:hover{background:var(--sand);box-shadow:0 4px 16px rgba(0,0,0,.16)}
-.loc-btn.loading{color:var(--muted)}
-.loc-dot-wrap{position:relative;width:14px;height:14px;flex-shrink:0}
-.loc-dot{width:14px;height:14px;border-radius:50%;background:#2196F3;opacity:.85}
-.loc-dot-pulse{position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;background:#2196F3;animation:pulse 1.8s ease-out infinite;opacity:0}
-@keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.8);opacity:0}}
+/* ── TOP BAR ── */
+.topbar{
+  background:linear-gradient(135deg,#062d45,#0a3d5c 60%,#0d5c45);
+  padding:10px 16px;display:flex;align-items:center;gap:10px;
+  flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:200;position:relative
+}
+.topbar-title{font-family:'Noto Serif TC',serif;font-size:15px;color:#fff;font-weight:700;letter-spacing:1px}
+.topbar-sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px}
+
+/* ── TABS ── */
+.tribe-tabs{
+  display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;
+  padding:8px 12px;background:var(--white);border-bottom:1px solid var(--border);
+  flex-shrink:0;z-index:200;position:relative
+}
+.tribe-tabs::-webkit-scrollbar{display:none}
+.tribe-tab{
+  flex-shrink:0;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;
+  cursor:pointer;border:1px solid var(--border);background:var(--white);
+  color:var(--muted);transition:all .15s;white-space:nowrap;user-select:none
+}
+.tribe-tab.active{color:#fff;border-color:transparent}
+
+/* ── LAYOUT: mobile-first ── */
+.app{display:flex;flex-direction:column;height:calc(100vh - 84px);position:relative}
+
+/* MAP always full width */
+#map{width:100%;height:100%;z-index:1}
+
+/* ── LOC BUTTON ── */
+.loc-btn{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:500;
+  background:var(--white);border:1px solid var(--border);border-radius:24px;
+  padding:7px 14px;font-size:12.5px;font-weight:500;cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);display:flex;align-items:center;gap:6px;
+  color:var(--ocean);font-family:inherit;white-space:nowrap
+}
+.loc-pulse{width:12px;height:12px;border-radius:50%;background:#2196F3;
+  box-shadow:0 0 0 0 rgba(33,150,243,.4);animation:lp 1.5s infinite}
+@keyframes lp{0%{box-shadow:0 0 0 0 rgba(33,150,243,.4)}70%{box-shadow:0 0 0 8px rgba(33,150,243,0)}100%{box-shadow:0 0 0 0 rgba(33,150,243,0)}}
+
+/* ── LEGEND ── */
+.legend{
+  position:absolute;right:10px;z-index:500;
+  background:rgba(255,255,255,.95);border-radius:10px;padding:8px 11px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:10.5px;backdrop-filter:blur(4px)
+}
+.l-item{display:flex;align-items:center;gap:6px;margin-bottom:3px;color:var(--text)}
+.l-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.l-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* ── BOTTOM SHEET (list) ── */
+.bottom-sheet{
+  position:absolute;bottom:0;left:0;right:0;z-index:600;
+  background:var(--white);border-radius:18px 18px 0 0;
+  box-shadow:0 -4px 24px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;
+  height:52px;transition:height .3s cubic-bezier(.4,0,.2,1);overflow:hidden
+}
+.bottom-sheet.open{height:58%}
+.bs-handle{
+  flex-shrink:0;height:52px;display:flex;align-items:center;
+  padding:0 16px;cursor:pointer;user-select:none;gap:10px
+}
+.bs-bar{width:36px;height:4px;border-radius:2px;background:#ddd;flex-shrink:0}
+.bs-title{font-size:13.5px;font-weight:500;color:var(--ocean)}
+.bs-count{font-size:12px;color:var(--muted)}
+.bs-arrow{margin-left:auto;font-size:12px;color:var(--muted);transition:transform .25s}
+.bottom-sheet.open .bs-arrow{transform:rotate(180deg)}
+.bs-list{flex:1;overflow-y:auto;padding:4px 8px 24px}
+.tribe-sep{font-size:10.5px;font-weight:500;padding:8px 8px 3px;display:flex;gap:5px}
+.sitem{
+  display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;
+  cursor:pointer;border:1.5px solid transparent;margin-bottom:2px;transition:all .12s
+}
+.sitem:hover,.sitem:active{background:var(--sand)}
+.sitem.active{background:var(--white);border-color:var(--ocean);box-shadow:0 1px 6px rgba(10,61,92,.1)}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sdot.sq{border-radius:2px;width:9px;height:9px}
+.sname{font-size:13px;font-weight:500;color:var(--text);line-height:1.3}
+.stag{font-size:10px;padding:1px 6px;border-radius:6px;margin-top:3px;display:inline-block;font-weight:500}
+
+/* ── DETAIL SHEET ── */
+.detail-sheet{
+  position:absolute;bottom:0;left:0;right:0;z-index:700;
+  background:var(--white);border-radius:18px 18px 0 0;
+  box-shadow:0 -4px 28px rgba(0,0,0,.22);
+  display:flex;flex-direction:column;
+  height:0;transition:height .3s cubic-bezier(.4,0,.2,1);overflow:hidden
+}
+.detail-sheet.open{height:65%}
+.ds-close{
+  position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;
+  background:rgba(0,0,0,.35);color:#fff;border:none;cursor:pointer;
+  font-size:14px;z-index:10;display:flex;align-items:center;justify-content:center
+}
+.ds-img{width:100%;height:140px;object-fit:cover;display:block;flex-shrink:0}
+.ds-ph{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0}
+.ds-body{padding:12px 16px 16px;flex:1;overflow-y:auto}
+.ds-badge{font-size:11px;padding:2px 9px;border-radius:9px;font-weight:500;display:inline-block;margin-bottom:7px}
+.ds-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;margin-bottom:5px;line-height:1.3;color:var(--text)}
+.ds-rating{font-size:12px;color:#9a7200;margin-bottom:8px}
+.ds-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:8px}
+.ds-tip{background:var(--sand);border-radius:8px;padding:8px 11px;font-size:12px;font-weight:500;margin-bottom:8px;border-left:3px solid var(--teal);color:#1a5c47}
+.ds-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.ds-btn{display:block;text-align:center;padding:10px;border-radius:10px;font-size:13.5px;font-weight:500;color:#fff;cursor:pointer;border:none;width:100%;font-family:inherit}
+
+/* ── DESKTOP OVERRIDE ── */
+@media(min-width:769px){
+  .app{flex-direction:row}
+  .sidebar{
+    width:270px;min-width:270px;display:flex;flex-direction:column;
+    border-right:1px solid var(--border);background:var(--panel);
+    position:relative;z-index:100;flex-shrink:0
+  }
+  .sidebar-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+  .sidebar-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+  .sidebar-count{font-size:20px;font-weight:500;color:var(--ocean)}
+  .sidebar-list{flex:1;overflow-y:auto;padding:6px}
+  .sidebar-list::-webkit-scrollbar{width:4px}
+  .sidebar-list::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
+  .map-wrap{flex:1;position:relative}
+  .bottom-sheet{display:none}
+  .detail-sheet{display:none}
+  .detail-panel{
+    width:0;min-width:0;background:var(--white);border-left:1px solid var(--border);
+    display:flex;flex-direction:column;overflow:hidden;
+    transition:width .25s ease;flex-shrink:0;position:relative
+  }
+  .detail-panel.open{width:260px;min-width:260px}
+  .dp-close{
+    position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;
+    background:rgba(0,0,0,.35);color:#fff;border:none;cursor:pointer;
+    font-size:14px;z-index:10;display:flex;align-items:center;justify-content:center
+  }
+  .dp-img{width:100%;height:150px;object-fit:cover;display:block}
+  .dp-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:44px}
+  .dp-body{padding:14px 16px;flex:1;overflow-y:auto}
+  .dp-badge{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;display:inline-block;margin-bottom:8px}
+  .dp-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;margin-bottom:6px;line-height:1.3;color:var(--text)}
+  .dp-rating{font-size:12px;color:#9a7200;margin-bottom:10px}
+  .dp-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px}
+  .dp-tip{background:var(--sand);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:500;margin-bottom:10px;border-left:3px solid var(--teal);color:#1a5c47}
+  .dp-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+  .dp-btn{display:block;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:none;width:100%;font-family:inherit}
+  .legend{bottom:20px}
+  .loc-btn{font-size:13px;padding:7px 16px}
+}
+@media(max-width:768px){
+  .sidebar{display:none!important}
+  .detail-panel{display:none!important}
+  .map-wrap{flex:1;position:relative;height:100%}
+  .legend{bottom:62px}
+}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div>
     <div class="topbar-title">🌊 蘭嶼六大部落 · 景點美食地圖</div>
-    <div class="topbar-sub">Ponso No Tao · 人之島 · 6/6–6/8</div>
+    <div class="topbar-sub">Ponso No Tao · 6/6–6/8</div>
   </div>
 </div>
 <div class="tribe-tabs" id="tribeTabs">
@@ -87,43 +189,73 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;back
   <div class="tribe-tab" data-tribe="food">🍽 美食</div>
   <div class="tribe-tab" data-tribe="stay">🏠 住宿/潛水</div>
 </div>
-<div class="main">
-  <div class="sidebar">
-    <div class="panel-header">
-      <div class="panel-label">景點 / 美食清單</div>
-      <div class="panel-count" id="spotCount">0 個</div>
+
+<div class="app">
+  <!-- Desktop sidebar -->
+  <div class="sidebar" id="desktopSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-label">景點 / 美食清單</div>
+      <div class="sidebar-count" id="desktopCount">0 個</div>
     </div>
-    <div class="spot-list" id="spotList"></div>
+    <div class="sidebar-list" id="desktopList"></div>
   </div>
+
+  <!-- Map -->
   <div class="map-wrap">
     <div id="map"></div>
     <button class="loc-btn" id="locBtn" onclick="locateMe()">
-      <div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div>
-      顯示我的位置
+      <div class="loc-pulse"></div>顯示我的位置
     </button>
-    <div class="legend">
-      <div class="legend-title">圖例</div>
+    <div class="legend" id="legend" style="bottom:20px">
       <div class="l-item"><div class="l-dot" style="background:#1565C0"></div>東清</div>
       <div class="l-item"><div class="l-dot" style="background:#2E7D32"></div>野銀</div>
       <div class="l-item"><div class="l-dot" style="background:#BF360C"></div>朗島</div>
       <div class="l-item"><div class="l-dot" style="background:#6A1B9A"></div>椰油</div>
       <div class="l-item"><div class="l-dot" style="background:#E65100"></div>漁人</div>
       <div class="l-item"><div class="l-dot" style="background:#880E4F"></div>紅頭</div>
-      <div class="l-item"><div class="l-sq" style="background:#AD1457"></div>📸 IG打卡</div>
+      <div class="l-item"><div class="l-sq" style="background:#AD1457"></div>📸 IG</div>
       <div class="l-item"><div class="l-sq" style="background:#5D4037"></div>🍽 美食</div>
-      <div class="l-item"><div class="l-sq" style="background:#00695C"></div>🏠 住宿/潛水</div>
+      <div class="l-item"><div class="l-sq" style="background:#00695C"></div>🏠 住宿</div>
+    </div>
+
+    <!-- Desktop detail panel -->
+    <div class="detail-panel" id="detailPanel" style="position:absolute;top:0;right:0;height:100%;z-index:500">
+      <div id="dpImgWrap"></div>
+      <div class="dp-body">
+        <span class="dp-badge" id="dpBadge"></span>
+        <div class="dp-name" id="dpName"></div>
+        <div class="dp-rating" id="dpRating"></div>
+        <div class="dp-desc" id="dpDesc"></div>
+        <div class="dp-tip" id="dpTip"></div>
+        <div class="dp-hours" id="dpHours"></div>
+        <button class="dp-btn" id="dpBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
+      </div>
     </div>
   </div>
-  <div class="detail-panel" id="detailPanel">
-    <div class="d-img-wrap" id="dImgWrap"></div>
-    <div class="d-body">
-      <span class="d-badge" id="dBadge"></span>
-      <div class="d-name" id="dName"></div>
-      <div class="d-rating" id="dRating"></div>
-      <div class="d-desc" id="dDesc"></div>
-      <div class="d-tip" id="dTip"></div>
-      <div class="d-hours" id="dHours"></div>
-      <button class="btn-nav" id="dBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
+
+  <!-- Mobile: bottom list sheet -->
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="bs-handle" onclick="toggleSheet()">
+      <div class="bs-bar"></div>
+      <span class="bs-title">景點 / 美食</span>
+      <span class="bs-count" id="bsCount"></span>
+      <span class="bs-arrow">▲</span>
+    </div>
+    <div class="bs-list" id="bsList"></div>
+  </div>
+
+  <!-- Mobile: detail sheet -->
+  <div class="detail-sheet" id="detailSheet">
+    <button class="ds-close" onclick="closeDetailSheet()">✕</button>
+    <div id="dsImgWrap"></div>
+    <div class="ds-body">
+      <span class="ds-badge" id="dsBadge"></span>
+      <div class="ds-name" id="dsName"></div>
+      <div class="ds-rating" id="dsRating"></div>
+      <div class="ds-desc" id="dsDesc"></div>
+      <div class="ds-tip" id="dsTip"></div>
+      <div class="ds-hours" id="dsHours"></div>
+      <button class="ds-btn" id="dsBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
     </div>
   </div>
 </div>
@@ -142,7 +274,6 @@ const TC={
   food:    {name:'美食餐廳',emoji:'🍽',color:'#5D4037',bg:'#EFEBE9',text:'#3E2723'},
 };
 
-// ★ 全部使用 Google Places API 回傳的真實座標
 const SPOTS=[
   // 東清
   {id:'dq1',t:'dongqing',n:'東清灣',tag:'必去',r:4.7,rc:756,d:'台灣最早看到日出的地方。清晨拼板舟靜靜停在灣內，金光灑落，是蘭嶼最經典的畫面。',tip:'最佳時間：清晨 5:00–6:30',lat:22.0576764,lng:121.5657102,url:'https://maps.google.com/?cid=16983574079719480307',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOK7jvVhoz5Ck8ISGjSc8S4KEkt-zNT03WCh2B4oJMTXo2bJiWpWYSL7yNdgUR5zWql6Z-A2hBPiY6PAL7-3oqME9Ogel3XRNNgG8_cYwG4XIvtKaBz0dYMp3B-uMxKfy3ACk-qVe9MdSoAk9M=s600'},
@@ -196,167 +327,209 @@ const SPOTS=[
 const CENTERS={all:[22.044,121.547,12],dongqing:[22.068,121.570,14],yeyin:[22.035,121.572,14],langdao:[22.080,121.529,14],yeyou:[22.053,121.513,14],yuren:[22.028,121.536,14],hongtou:[22.017,121.565,14],ig:[22.044,121.547,12],food:[22.044,121.547,12],stay:[22.068,121.547,13]};
 const TRIBE_ORDER=['dongqing','yeyin','langdao','yeyou','yuren','hongtou','ig','food','stay'];
 
-let curTribe='all',curId=null,curUrl='';
-const markers={};
+const isMobile = () => window.innerWidth <= 768;
+let curTribe = 'all', curId = null, curUrl = '';
+const markers = {};
 
-const map=L.map('map',{zoomControl:true,preferCanvas:true}).setView([22.044,121.547],12);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-  maxZoom:19,subdomains:'abcd'
+// MAP
+const map = L.map('map', {zoomControl:true, preferCanvas:true}).setView([22.044, 121.547], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution:'© OpenStreetMap © CARTO', maxZoom:19, subdomains:'abcd'
 }).addTo(map);
 
-function makeIcon(t,active){
-  const c=TC[t].color;const s=active?42:30;
-  const sq=t==='food'||t==='ig'||t==='stay';
-  const em=t==='food'?'🍽':t==='ig'?'📸':t==='stay'?'🏠':'';
-  const shape=sq
-    ?`<rect x="4" y="4" width="32" height="32" rx="8" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><text x="20" y="28" text-anchor="middle" font-size="18">${em}</text>`
-    :`<circle cx="20" cy="20" r="14" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><circle cx="20" cy="20" r="${active?6:4}" fill="white"/>`;
-  return L.divIcon({html:`<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 40 40">${shape}</svg>`,className:'',iconSize:[s,s],iconAnchor:[s/2,s/2],popupAnchor:[0,-s/2+4]});
+function makeIcon(t, active) {
+  const c = TC[t].color; const s = active ? 42 : 30;
+  const sq = ['food','ig','stay'].includes(t);
+  const em = {food:'🍽', ig:'📸', stay:'🏠'}[t] || '';
+  const shape = sq
+    ? `<rect x="4" y="4" width="32" height="32" rx="8" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><text x="20" y="28" text-anchor="middle" font-size="18">${em}</text>`
+    : `<circle cx="20" cy="20" r="14" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><circle cx="20" cy="20" r="${active?6:4}" fill="white"/>`;
+  return L.divIcon({html:`<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 40 40">${shape}</svg>`, className:'', iconSize:[s,s], iconAnchor:[s/2,s/2], popupAnchor:[0,-s/2+4]});
 }
 
-SPOTS.forEach(s=>{
-  const m=L.marker([s.lat,s.lng],{icon:makeIcon(s.t,false)}).addTo(map);
-  m.on('click',()=>selectSpot(s.id,false));
-  markers[s.id]=m;
+SPOTS.forEach(s => {
+  const m = L.marker([s.lat, s.lng], {icon: makeIcon(s.t, false)}).addTo(map);
+  m.on('click', () => selectSpot(s.id, false));
+  markers[s.id] = m;
 });
 
-function selectSpot(id,fly=true){
-  if(curId&&markers[curId]){const p=SPOTS.find(x=>x.id===curId);if(p)markers[curId].setIcon(makeIcon(p.t,false));}
-  curId=id;
-  const s=SPOTS.find(x=>x.id===id);
-  markers[id].setIcon(makeIcon(s.t,true));
-  document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
-  const li=document.getElementById('li-'+id);
-  if(li){li.classList.add('active');li.scrollIntoView({behavior:'smooth',block:'nearest'});}
-  if(fly){map.flyTo([s.lat,s.lng],16,{animate:true,duration:0.75});}
-  showDetail(s);
+function resetMarker(id) {
+  if (id && markers[id]) {
+    const s = SPOTS.find(x => x.id === id);
+    if (s) markers[id].setIcon(makeIcon(s.t, false));
+  }
 }
 
-function showDetail(s){
-  const c=TC[s.t];
-  const iw=document.getElementById('dImgWrap');
-  iw.innerHTML=s.img
-    ?`<img class="d-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=d-ph style=background:linear-gradient(135deg,${c.color}44,${c.color}88)>${c.emoji}</div>'"><button class="detail-close" onclick="closeDetail()">✕</button>`
-    :`<div class="d-ph" style="background:linear-gradient(135deg,${c.color}44,${c.color}88)">${c.emoji}</div><button class="detail-close" onclick="closeDetail()">✕</button>`;
-  document.getElementById('dBadge').textContent=c.emoji+' '+c.name;
-  document.getElementById('dBadge').style.cssText=`background:${c.bg};color:${c.text}`;
-  document.getElementById('dName').textContent=s.n;
-  document.getElementById('dRating').textContent=s.r?`⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）`:'';
-  document.getElementById('dDesc').textContent=s.d;
-  document.getElementById('dTip').textContent='💡 '+s.tip;
-  document.getElementById('dHours').textContent=s.hours?'🕐 '+s.hours:'';
-  document.getElementById('dBtn').style.background=c.color;
-  curUrl=s.url;
+function selectSpot(id, fly = true) {
+  resetMarker(curId);
+  curId = id;
+  const s = SPOTS.find(x => x.id === id);
+  markers[id].setIcon(makeIcon(s.t, true));
+
+  // sync list highlights
+  document.querySelectorAll('.sitem').forEach(el => el.classList.remove('active'));
+  ['dl-', 'bl-'].forEach(pre => {
+    const el = document.getElementById(pre + id);
+    if (el) { el.classList.add('active'); el.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  });
+
+  if (fly) map.flyTo([s.lat, s.lng], 16, {animate:true, duration:0.75});
+
+  curUrl = s.url;
+
+  if (isMobile()) {
+    // close list sheet, open detail sheet
+    document.getElementById('bottomSheet').classList.remove('open');
+    showDetailSheet(s);
+  } else {
+    showDetailPanel(s);
+  }
+}
+
+// ── MOBILE DETAIL SHEET ──
+function showDetailSheet(s) {
+  const c = TC[s.t];
+  document.getElementById('dsImgWrap').innerHTML = s.img
+    ? `<img class="ds-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=ds-ph style=background:linear-gradient(135deg,${c.color}44,${c.color}88>${c.emoji}</div>'">`
+    : `<div class="ds-ph" style="background:linear-gradient(135deg,${c.color}44,${c.color}88)">${c.emoji}</div>`;
+  document.getElementById('dsBadge').textContent = c.emoji + ' ' + c.name;
+  document.getElementById('dsBadge').style.cssText = `background:${c.bg};color:${c.text}`;
+  document.getElementById('dsName').textContent = s.n;
+  document.getElementById('dsRating').textContent = s.r ? `⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）` : '';
+  document.getElementById('dsDesc').textContent = s.d;
+  document.getElementById('dsTip').textContent = '💡 ' + s.tip;
+  document.getElementById('dsHours').textContent = s.hours ? '🕐 ' + s.hours : '';
+  document.getElementById('dsBtn').style.background = c.color;
+  document.getElementById('detailSheet').classList.add('open');
+}
+
+function closeDetailSheet() {
+  document.getElementById('detailSheet').classList.remove('open');
+  resetMarker(curId); curId = null;
+  document.querySelectorAll('.sitem').forEach(el => el.classList.remove('active'));
+}
+
+// ── DESKTOP DETAIL PANEL ──
+function showDetailPanel(s) {
+  const c = TC[s.t];
+  document.getElementById('dpImgWrap').innerHTML = s.img
+    ? `<img class="dp-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=dp-ph style=background:linear-gradient(135deg,${c.color}44,${c.color}88>${c.emoji}</div>'"><button class='dp-close' onclick='closeDetailPanel()'>✕</button>`
+    : `<div class="dp-ph" style="background:linear-gradient(135deg,${c.color}44,${c.color}88)">${c.emoji}</div><button class='dp-close' onclick='closeDetailPanel()'>✕</button>`;
+  document.getElementById('dpBadge').textContent = c.emoji + ' ' + c.name;
+  document.getElementById('dpBadge').style.cssText = `background:${c.bg};color:${c.text}`;
+  document.getElementById('dpName').textContent = s.n;
+  document.getElementById('dpRating').textContent = s.r ? `⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）` : '';
+  document.getElementById('dpDesc').textContent = s.d;
+  document.getElementById('dpTip').textContent = '💡 ' + s.tip;
+  document.getElementById('dpHours').textContent = s.hours ? '🕐 ' + s.hours : '';
+  document.getElementById('dpBtn').style.background = c.color;
   document.getElementById('detailPanel').classList.add('open');
 }
 
-function closeDetail(){
+function closeDetailPanel() {
   document.getElementById('detailPanel').classList.remove('open');
-  if(curId&&markers[curId]){const s=SPOTS.find(x=>x.id===curId);if(s)markers[curId].setIcon(makeIcon(s.t,false));}
-  curId=null;
-  document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
+  resetMarker(curId); curId = null;
+  document.querySelectorAll('.sitem').forEach(el => el.classList.remove('active'));
 }
 
-function openMaps(){window.open(curUrl,'_blank');}
+function openMaps() { window.open(curUrl, '_blank'); }
 
-document.getElementById('tribeTabs').addEventListener('click',e=>{
-  const tab=e.target.closest('.tribe-tab');if(!tab)return;
-  curTribe=tab.dataset.tribe;closeDetail();
-  document.querySelectorAll('.tribe-tab').forEach(t=>{t.classList.remove('active');t.style.cssText='';});
-  tab.classList.add('active');
-  if(curTribe!=='all'){tab.style.background=TC[curTribe]?.color||'#555';tab.style.color='#fff';tab.style.borderColor='transparent';}
-  SPOTS.forEach(s=>{if(curTribe==='all'||s.t===curTribe)map.addLayer(markers[s.id]);else map.removeLayer(markers[s.id]);});
-  const[la,ln,z]=CENTERS[curTribe]||CENTERS.all;
-  map.flyTo([la,ln],z,{animate:true,duration:0.65});
-  renderList();
-});
+// ── BOTTOM SHEET ──
+function toggleSheet() {
+  document.getElementById('bottomSheet').classList.toggle('open');
+  document.getElementById('detailSheet').classList.remove('open');
+}
 
-function renderList(){
-  const filtered=curTribe==='all'?SPOTS:SPOTS.filter(s=>s.t===curTribe);
-  document.getElementById('spotCount').textContent=filtered.length+' 個';
-  const el=document.getElementById('spotList');el.innerHTML='';
-  const groups={};filtered.forEach(s=>(groups[s.t]=groups[s.t]||[]).push(s));
-  const order=curTribe==='all'?TRIBE_ORDER:[curTribe];
-  order.forEach(tk=>{
-    if(!groups[tk])return;
-    if(curTribe==='all'){
-      const sep=document.createElement('div');sep.className='tribe-sep';sep.style.color=TC[tk].color;
-      sep.innerHTML=`<span>${TC[tk].emoji}</span><span>${TC[tk].name}</span>`;el.appendChild(sep);
-    }
-    groups[tk].forEach(s=>{
-      const sq=s.t==='food'||s.t==='ig';
-      const item=document.createElement('div');item.className='spot-item'+(curId===s.id?' active':'');item.id='li-'+s.id;
-      item.innerHTML=`<div class="sdot${sq?' sq':''}" style="background:${TC[s.t].color}"></div><div><div class="sname">${s.n}</div><span class="stag" style="background:${TC[s.t].bg};color:${TC[s.t].text}">${s.tag}</span></div>`;
-      item.onclick=()=>selectSpot(s.id);el.appendChild(item);
+// ── RENDER LIST ──
+function makeListItem(s, prefix) {
+  const sq = ['food','ig','stay'].includes(s.t);
+  const item = document.createElement('div');
+  item.className = 'sitem' + (curId === s.id ? ' active' : '');
+  item.id = prefix + s.id;
+  item.innerHTML = `<div class="sdot${sq?' sq':''}" style="background:${TC[s.t].color}"></div>
+    <div><div class="sname">${s.n}</div>
+    <span class="stag" style="background:${TC[s.t].bg};color:${TC[s.t].text}">${s.tag}</span></div>`;
+  item.onclick = () => {
+    selectSpot(s.id);
+    if (!isMobile()) return;
+    document.getElementById('bottomSheet').classList.remove('open');
+  };
+  return item;
+}
+
+function renderList() {
+  const filtered = curTribe === 'all' ? SPOTS : SPOTS.filter(s => s.t === curTribe);
+  const count = filtered.length + ' 個';
+  document.getElementById('desktopCount').textContent = count;
+  document.getElementById('bsCount').textContent = count;
+
+  ['desktopList','bsList'].forEach((elId, i) => {
+    const prefix = i === 0 ? 'dl-' : 'bl-';
+    const el = document.getElementById(elId);
+    el.innerHTML = '';
+    const groups = {};
+    filtered.forEach(s => (groups[s.t] = groups[s.t] || []).push(s));
+    const order = curTribe === 'all' ? TRIBE_ORDER : [curTribe];
+    order.forEach(tk => {
+      if (!groups[tk]) return;
+      if (curTribe === 'all') {
+        const sep = document.createElement('div');
+        sep.className = 'tribe-sep'; sep.style.color = TC[tk].color;
+        sep.innerHTML = `<span>${TC[tk].emoji}</span><span>${TC[tk].name}</span>`;
+        el.appendChild(sep);
+      }
+      groups[tk].forEach(s => el.appendChild(makeListItem(s, prefix)));
     });
   });
 }
 
-renderList();
+// ── TABS ──
+document.getElementById('tribeTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tribe-tab');
+  if (!tab) return;
+  curTribe = tab.dataset.tribe;
+  resetMarker(curId); curId = null;
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('detailSheet').classList.remove('open');
+  document.getElementById('bottomSheet').classList.remove('open');
+  document.querySelectorAll('.tribe-tab').forEach(t => { t.classList.remove('active'); t.style.cssText = ''; });
+  tab.classList.add('active');
+  if (curTribe !== 'all') { tab.style.background = TC[curTribe]?.color || '#555'; tab.style.color = '#fff'; tab.style.borderColor = 'transparent'; }
+  SPOTS.forEach(s => {
+    if (curTribe === 'all' || s.t === curTribe) map.addLayer(markers[s.id]);
+    else map.removeLayer(markers[s.id]);
+  });
+  const [la, ln, z] = CENTERS[curTribe] || CENTERS.all;
+  map.flyTo([la, ln], z, {animate:true, duration:0.65});
+  renderList();
+});
 
 // ── GEOLOCATION ──
 let userMarker = null;
-
 function locateMe() {
+  if (!navigator.geolocation) { alert('此裝置不支援定位功能'); return; }
   const btn = document.getElementById('locBtn');
-  if (!navigator.geolocation) {
-    alert('此裝置不支援定位功能');
-    return;
-  }
-  btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot" style="background:#aaa"></div></div> 定位中…';
-  btn.classList.add('loading');
-
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-
-      // Remove old marker
-      if (userMarker) map.removeLayer(userMarker);
-
-      // Custom user icon
-      const icon = L.divIcon({
-        html: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="8" fill="#2196F3" stroke="white" stroke-width="2.5"/>
-          <circle cx="12" cy="12" r="3" fill="white"/>
-        </svg>`,
-        className: '', iconSize: [24, 24], iconAnchor: [12, 12]
-      });
-
-      userMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 })
-        .addTo(map)
-        .bindPopup(`<div style="font-size:13px;font-weight:500;padding:4px 6px">📍 你在這裡<br><span style="font-size:11px;color:#888">精確度 ±${Math.round(accuracy)}m</span></div>`, { closeButton: false })
-        .openPopup();
-
-      map.flyTo([lat, lng], 15, { animate: true, duration: 0.9 });
-
-      btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div> 重新定位';
-      btn.classList.remove('loading');
-    },
-    err => {
-      btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div> 顯示我的位置';
-      btn.classList.remove('loading');
-      const msgs = {1:'請允許位置存取權限', 2:'無法取得位置，請檢查網路', 3:'定位逾時，請再試一次'};
-      alert(msgs[err.code] || '定位失敗');
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
+  btn.textContent = ' 定位中…';
+  navigator.geolocation.getCurrentPosition(pos => {
+    const {latitude:lat, longitude:lng, accuracy} = pos.coords;
+    if (userMarker) map.removeLayer(userMarker);
+    const icon = L.divIcon({
+      html:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#2196F3" stroke="white" stroke-width="2.5"/><circle cx="12" cy="12" r="3" fill="white"/></svg>`,
+      className:'', iconSize:[24,24], iconAnchor:[12,12]
+    });
+    userMarker = L.marker([lat,lng], {icon, zIndexOffset:1000}).addTo(map)
+      .bindPopup(`<div style="font-size:13px;font-weight:500;padding:4px">📍 你在這裡<br><span style="font-size:11px;color:#888">精確度 ±${Math.round(accuracy)}m</span></div>`, {closeButton:false})
+      .openPopup();
+    map.flyTo([lat,lng], 15, {animate:true, duration:0.9});
+    btn.innerHTML = '<div class="loc-pulse"></div>重新定位';
+  }, err => {
+    btn.innerHTML = '<div class="loc-pulse"></div>顯示我的位置';
+    const msgs = {1:'請允許位置存取權限', 2:'無法取得位置', 3:'定位逾時，請再試'};
+    alert(msgs[err.code] || '定位失敗');
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:0});
 }
 
+renderList();
 </script>
-
-<!-- Mobile list bottom sheet -->
-<div class="list-sheet" id="listSheet">
-  <div class="sheet-handle" onclick="toggleSheet()">
-    <div class="sheet-handle-inner">
-      <div class="sheet-handle-bar" style="flex-shrink:0;margin:0"></div>
-      <span class="sheet-handle-title" id="sheetTitle">景點 / 美食清單</span>
-      <span class="sheet-handle-count" id="sheetCount"></span>
-      <span class="sheet-arrow" id="sheetArrow">▲</span>
-    </div>
-  </div>
-  <div class="sheet-list" id="sheetList"></div>
-</div>
-
 </body>
 </html>
