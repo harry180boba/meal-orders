@@ -8,102 +8,73 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --ocean:#0a3d5c;--teal:#0d7a5f;--sand:#f3ede4;--white:#fff;
-  --text:#1c1c1c;--muted:#6a6a6a;--border:#e0d8ce;--panel:#faf7f3;
-}
+:root{--ocean:#0a3d5c;--teal:#0d7a5f;--sand:#f3ede4;--white:#fff;--text:#1c1c1c;--muted:#6a6a6a;--border:#e0d8ce;--panel:#faf7f3}
 html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;background:var(--sand);color:var(--text)}
-
-/* TOP BAR */
-.topbar{
-  background:linear-gradient(135deg,#062d45,#0a3d5c 60%,#0d5c45);
-  padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;
-  box-shadow:0 2px 12px rgba(0,0,0,.25)
-}
+.topbar{background:linear-gradient(135deg,#062d45,#0a3d5c 60%,#0d5c45);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 .topbar-title{font-family:'Noto Serif TC',serif;font-size:17px;color:#fff;font-weight:700;letter-spacing:1px;white-space:nowrap}
 .topbar-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;white-space:nowrap}
-
-/* TABS */
 .tribe-tabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:9px 14px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
 .tribe-tabs::-webkit-scrollbar{display:none}
 .tribe-tab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;white-space:nowrap;user-select:none}
 .tribe-tab:hover{background:var(--sand)}
 .tribe-tab.active{color:#fff;border-color:transparent}
-
-/* LAYOUT */
 .main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 91px)}
-
-/* SIDEBAR */
 .sidebar{width:270px;min-width:270px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--panel)}
 .panel-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
 .panel-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
 .panel-count{font-size:20px;font-weight:500;color:var(--ocean)}
 .spot-list{flex:1;overflow-y:auto;padding:6px}
 .spot-list::-webkit-scrollbar{width:4px}
-.spot-list::-webkit-scrollbar-track{background:transparent}
 .spot-list::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
 .tribe-sep{font-size:10.5px;font-weight:500;padding:10px 10px 3px;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
 .spot-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;border:1.5px solid transparent;margin-bottom:2px;transition:all .15s}
 .spot-item:hover{background:var(--sand)}
 .spot-item.active{background:var(--white);border-color:var(--ocean);box-shadow:0 2px 8px rgba(10,61,92,.1)}
-.spot-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.spot-dot.square{border-radius:3px;width:9px;height:9px}
-.spot-name{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.3}
-.spot-tag{font-size:10px;padding:1px 6px;border-radius:6px;margin-top:3px;display:inline-block;font-weight:500}
-
-/* MAP */
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sdot.sq{border-radius:3px;width:9px;height:9px}
+.sname{font-size:12.5px;font-weight:500;color:var(--text);line-height:1.3}
+.stag{font-size:10px;padding:1px 6px;border-radius:6px;margin-top:3px;display:inline-block;font-weight:500}
 .map-wrap{flex:1;position:relative}
 #map{width:100%;height:100%}
-
-/* DETAIL PANEL */
-.detail-panel{
-  width:0;min-width:0;background:var(--white);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease;flex-shrink:0
-}
+.detail-panel{width:0;min-width:0;background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease;flex-shrink:0}
 .detail-panel.open{width:260px;min-width:260px}
-.detail-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10}
-.detail-img-wrap{position:relative;flex-shrink:0}
-.detail-img{width:100%;height:150px;object-fit:cover;display:block}
-.detail-img-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#c5ddd6,#9cc8bb);flex-shrink:0}
-.detail-body{padding:14px 16px;flex:1;overflow-y:auto}
-.detail-badge{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;display:inline-block;margin-bottom:8px}
-.detail-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
-.detail-rating{font-size:12px;color:#9a7200;margin-bottom:10px}
-.detail-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px}
-.detail-tip{background:var(--sand);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:500;margin-bottom:12px;border-left:3px solid var(--teal);color:#1a5c47}
-.detail-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
-.btn-primary{display:block;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#fff;text-decoration:none;margin-bottom:6px;cursor:pointer;border:none;width:100%;font-family:inherit}
-.btn-secondary{display:block;text-align:center;padding:8px;border-radius:9px;font-size:12.5px;font-weight:500;text-decoration:none;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text);width:100%;font-family:inherit}
-
-/* POPUP */
+.detail-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10}
+.d-img-wrap{position:relative;flex-shrink:0}
+.d-img{width:100%;height:150px;object-fit:cover;display:block}
+.d-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0}
+.d-body{padding:14px 16px;flex:1;overflow-y:auto}
+.d-badge{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;display:inline-block;margin-bottom:8px}
+.d-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
+.d-rating{font-size:12px;color:#9a7200;margin-bottom:10px}
+.d-desc{font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px}
+.d-tip{background:var(--sand);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:500;margin-bottom:10px;border-left:3px solid var(--teal);color:#1a5c47}
+.d-hours{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.btn-nav{display:block;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:none;width:100%;font-family:inherit}
+.legend{position:absolute;bottom:20px;right:16px;background:rgba(255,255,255,.95);border-radius:12px;padding:10px 14px;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:11.5px;backdrop-filter:blur(4px)}
+.legend-title{font-weight:500;color:var(--ocean);margin-bottom:7px;font-size:11px}
+.l-item{display:flex;align-items:center;gap:7px;margin-bottom:4px;color:var(--text);font-size:11px}
+.l-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.l-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
 .leaflet-popup-content-wrapper{border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,.18)!important;padding:0!important;overflow:hidden}
 .leaflet-popup-content{margin:0!important;width:0!important;height:0!important;overflow:hidden!important;display:none!important}
 .leaflet-popup-tip-container{display:none}
-.leaflet-popup-content-wrapper{cursor:pointer}
 
-/* LEGEND */
-.legend{position:absolute;bottom:20px;right:16px;background:rgba(255,255,255,.95);border-radius:12px;padding:10px 14px;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:11.5px;backdrop-filter:blur(4px)}
-.legend-title{font-weight:500;color:var(--ocean);margin-bottom:7px;font-size:11px;letter-spacing:.5px}
-.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:4px;color:var(--text);font-size:11px}
-.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.legend-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-
-/* MOBILE */
-@media(max-width:700px){
-  .sidebar{display:none}
-  .detail-panel.open{width:100%;position:absolute;bottom:0;left:0;z-index:1000;height:60%;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.15)}
-}
+.loc-btn{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:900;background:var(--white);border:1px solid var(--border);border-radius:24px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;align-items:center;gap:7px;color:var(--ocean);font-family:inherit;white-space:nowrap;transition:all .2s}
+.loc-btn:hover{background:var(--sand);box-shadow:0 4px 16px rgba(0,0,0,.16)}
+.loc-btn.loading{color:var(--muted)}
+.loc-dot-wrap{position:relative;width:14px;height:14px;flex-shrink:0}
+.loc-dot{width:14px;height:14px;border-radius:50%;background:#2196F3;opacity:.85}
+.loc-dot-pulse{position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;background:#2196F3;animation:pulse 1.8s ease-out infinite;opacity:0}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.8);opacity:0}}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div>
     <div class="topbar-title">🌊 蘭嶼六大部落 · 景點美食地圖</div>
     <div class="topbar-sub">Ponso No Tao · 人之島 · 6/6–6/8</div>
   </div>
 </div>
-
 <div class="tribe-tabs" id="tribeTabs">
   <div class="tribe-tab active" data-tribe="all">🗺 全部</div>
   <div class="tribe-tab" data-tribe="dongqing">🌅 東清</div>
@@ -114,43 +85,45 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;back
   <div class="tribe-tab" data-tribe="hongtou">🌄 紅頭</div>
   <div class="tribe-tab" data-tribe="ig">📸 IG打卡</div>
   <div class="tribe-tab" data-tribe="food">🍽 美食</div>
+  <div class="tribe-tab" data-tribe="stay">🏠 住宿/潛水</div>
 </div>
-
 <div class="main">
   <div class="sidebar">
     <div class="panel-header">
       <div class="panel-label">景點 / 美食清單</div>
-      <div class="panel-count" id="spotCount">30 個</div>
+      <div class="panel-count" id="spotCount">0 個</div>
     </div>
     <div class="spot-list" id="spotList"></div>
   </div>
   <div class="map-wrap">
     <div id="map"></div>
+    <button class="loc-btn" id="locBtn" onclick="locateMe()">
+      <div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div>
+      顯示我的位置
+    </button>
     <div class="legend">
       <div class="legend-title">圖例</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#1565C0"></div>東清</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#2E7D32"></div>野銀</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#BF360C"></div>朗島</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#6A1B9A"></div>椰油</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#E65100"></div>漁人</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#880E4F"></div>紅頭</div>
-      <div class="legend-item"><div class="legend-sq" style="background:#AD1457"></div>📸 IG打卡</div>
-      <div class="legend-item"><div class="legend-sq" style="background:#5D4037"></div>🍽 美食</div>
+      <div class="l-item"><div class="l-dot" style="background:#1565C0"></div>東清</div>
+      <div class="l-item"><div class="l-dot" style="background:#2E7D32"></div>野銀</div>
+      <div class="l-item"><div class="l-dot" style="background:#BF360C"></div>朗島</div>
+      <div class="l-item"><div class="l-dot" style="background:#6A1B9A"></div>椰油</div>
+      <div class="l-item"><div class="l-dot" style="background:#E65100"></div>漁人</div>
+      <div class="l-item"><div class="l-dot" style="background:#880E4F"></div>紅頭</div>
+      <div class="l-item"><div class="l-sq" style="background:#AD1457"></div>📸 IG打卡</div>
+      <div class="l-item"><div class="l-sq" style="background:#5D4037"></div>🍽 美食</div>
+      <div class="l-item"><div class="l-sq" style="background:#00695C"></div>🏠 住宿/潛水</div>
     </div>
   </div>
   <div class="detail-panel" id="detailPanel">
-    <div class="detail-img-wrap" id="detailImgWrap">
-      <div class="detail-img-ph" id="detailImgPh">🌊</div>
-      <button class="detail-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="detail-body">
-      <span class="detail-badge" id="detailBadge"></span>
-      <div class="detail-name" id="detailName"></div>
-      <div class="detail-rating" id="detailRating"></div>
-      <div class="detail-desc" id="detailDesc"></div>
-      <div class="detail-tip" id="detailTip"></div>
-      <div class="detail-hours" id="detailHours"></div>
-      <button class="btn-primary" id="detailMapsBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
+    <div class="d-img-wrap" id="dImgWrap"></div>
+    <div class="d-body">
+      <span class="d-badge" id="dBadge"></span>
+      <div class="d-name" id="dName"></div>
+      <div class="d-rating" id="dRating"></div>
+      <div class="d-desc" id="dDesc"></div>
+      <div class="d-tip" id="dTip"></div>
+      <div class="d-hours" id="dHours"></div>
+      <button class="btn-nav" id="dBtn" onclick="openMaps()">📍 在 Google 地圖開啟</button>
     </div>
   </div>
 </div>
@@ -165,81 +138,81 @@ const TC={
   yuren:   {name:'漁人部落',emoji:'✈️',color:'#E65100',bg:'#FFF3E0',text:'#7F2E00'},
   hongtou: {name:'紅頭部落',emoji:'🌄',color:'#880E4F',bg:'#FCE4EC',text:'#5C0935'},
   ig:      {name:'IG打卡',emoji:'📸',color:'#AD1457',bg:'#FCE4EC',text:'#880E4F'},
+  stay:    {name:'住宿/潛水',emoji:'🏠',color:'#00695C',bg:'#E0F2F1',text:'#004D40'},
   food:    {name:'美食餐廳',emoji:'🍽',color:'#5D4037',bg:'#EFEBE9',text:'#3E2723'},
 };
 
+// ★ 全部使用 Google Places API 回傳的真實座標
 const SPOTS=[
   // 東清
-  {id:'dq1',t:'dongqing',n:'東清灣',tag:'必去',r:4.7,rc:756,d:'台灣最早看到日出的地方。清晨拼板舟靜靜停在灣內，金光灑落，是蘭嶼最經典的畫面。',tip:'最佳時間：清晨 5:00–6:30',lat:22.0577,lng:121.5657,url:'https://maps.google.com/?cid=16983574079719480307',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOK7jvVhoz5Ck8ISGjSc8S4KEkt-zNT03WCh2B4oJMTXo2bJiWpWYSL7yNdgUR5zWql6Z-A2hBPiY6PAL7-3oqME9Ogel3XRNNgG8_cYwG4XIvtKaBz0dYMp3B-uMxKfy3ACk-qVe9MdSoAk9M=s600'},
-  {id:'dq2',t:'dongqing',n:'軍艦岩',tag:'地形',r:4.6,rc:113,d:'形似軍艦的壯觀礁岩，是蘭嶼最具氣勢的地形奇觀之一。',tip:'位於東清北方海岸',lat:22.0790,lng:121.5796,url:'https://maps.google.com/?cid=15844536729599641507',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMrp4UGX4fKkV7W70hhbz-9S8GZFq0-ypyan4gbnAhOje2chOvghFzdIFg59PcZGUonlsAx5YSVuNHTX8bwM6Lj-XlsU_iUcUUkQXye_kI383u0fxxBZBt13x-LWWMBCOdJaWuIYj4uqp6Lqw=s600'},
-  {id:'dq3',t:'dongqing',n:'情人洞',tag:'地形',r:4.6,rc:1117,d:'海蝕洞穿透礁岩，穿越洞口可見湛藍大海，充滿浪漫感的自然奇景。',tip:'漲潮時請勿進入',lat:22.0619,lng:121.5733,url:'https://maps.google.com/?cid=3870986719226763316',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOQj4ItKaZfJrapX4_3NzessyVYOHkJx2hgLtEAffpLw4CE1SPu8Fp1KZVBbXFb0uilii99XflrOfXqg_ok5uhBuWaaB0B8XIJ6DbzuwReSV-W29-8uUCJ0lgdN4jIDws17b83f0R38g1n_zQ=s600'},
-  {id:'dq4',t:'dongqing',n:'雙獅岩',tag:'觀星',r:4.6,rc:659,d:'蘭嶼最頂級觀星點，晴天無月夜銀河倒映海面，震撼無比。',tip:'最佳：新月前後、無雲夜',lat:22.0851,lng:121.5673,url:'https://maps.google.com/?cid=10212366213492640037',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM_bqDOAnlOFIdrPqkJ93yptiWn623Bpbb845DVriQTCaz7rFA6N7Aq1OHN9i79vIsk-hcLMvanXCwzk_Gu4iKDjZChzniTdp70CTF54P-bBJDoT6NQBZhXRo-zJUQL3TTeOOwpzweaagGVDqlCyALsXw=s600'},
-  {id:'dq5',t:'dongqing',n:'東清夜市',tag:'夏季限定',r:4.1,rc:864,d:'每年夏季限定，東清灣旁有串燒、飛魚料理、手工藝品攤位，是島上最熱鬧的夜間場景。',tip:'約 18:30 開始',lat:22.0580,lng:121.5655,url:'https://maps.google.com/?cid=12681713332252103118',img:''},
+  {id:'dq1',t:'dongqing',n:'東清灣',tag:'必去',r:4.7,rc:756,d:'台灣最早看到日出的地方。清晨拼板舟靜靜停在灣內，金光灑落，是蘭嶼最經典的畫面。',tip:'最佳時間：清晨 5:00–6:30',lat:22.0576764,lng:121.5657102,url:'https://maps.google.com/?cid=16983574079719480307',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOK7jvVhoz5Ck8ISGjSc8S4KEkt-zNT03WCh2B4oJMTXo2bJiWpWYSL7yNdgUR5zWql6Z-A2hBPiY6PAL7-3oqME9Ogel3XRNNgG8_cYwG4XIvtKaBz0dYMp3B-uMxKfy3ACk-qVe9MdSoAk9M=s600'},
+  {id:'dq2',t:'dongqing',n:'軍艦岩',tag:'地形',r:4.6,rc:113,d:'形似軍艦的壯觀礁岩，是蘭嶼最具氣勢的地形奇觀之一。',tip:'位於東清北方海岸',lat:22.0790249,lng:121.5796098,url:'https://maps.google.com/?cid=15844536729599641507',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMrp4UGX4fKkV7W70hhbz-9S8GZFq0-ypyan4gbnAhOje2chOvghFzdIFg59PcZGUonlsAx5YSVuNHTX8bwM6Lj-XlsU_iUcUUkQXye_kI383u0fxxBZBt13x-LWWMBCOdJaWuIYj4uqp6Lqw=s600'},
+  {id:'dq3',t:'dongqing',n:'情人洞',tag:'地形',r:4.6,rc:1117,d:'海蝕洞穿透礁岩，穿越洞口可見湛藍大海，充滿浪漫感的自然奇景。',tip:'漲潮時請勿進入',lat:22.0618685,lng:121.5733384,url:'https://maps.google.com/?cid=3870986719226763316',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOQj4ItKaZfJrapX4_3NzessyVYOHkJx2hgLtEAffpLw4CE1SPu8Fp1KZVBbXFb0uilii99XflrOfXqg_ok5uhBuWaaB0B8XIJ6DbzuwReSV-W29-8uUCJ0lgdN4jIDws17b83f0R38g1n_zQ=s600'},
+  {id:'dq4',t:'dongqing',n:'雙獅岩',tag:'觀星',r:4.6,rc:659,d:'蘭嶼最頂級觀星點，晴天無月夜銀河倒映海面，震撼無比。',tip:'最佳：新月前後、無雲夜',lat:22.085142,lng:121.567281,url:'https://maps.google.com/?cid=10212366213492640037',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM_bqDOAnlOFIdrPqkJ93yptiWn623Bpbb845DVriQTCaz7rFA6N7Aq1OHN9i79vIsk-hcLMvanXCwzk_Gu4iKDjZChzniTdp70CTF54P-bBJDoT6NQBZhXRo-zJUQL3TTeOOwpzweaagGVDqlCyALsXw=s600'},
+  {id:'dq5',t:'dongqing',n:'東清夜市',tag:'夏季限定',r:4.1,rc:864,d:'每年夏季限定，東清灣旁有串燒、飛魚料理、手工藝品攤位，是島上最熱鬧的夜間場景。',tip:'6:30–22:00',hours:'18:30–22:00（夏季限定）',lat:22.0579732,lng:121.5655392,url:'https://maps.google.com/?cid=12681713332252103118',img:''},
   // 野銀
-  {id:'yy1',t:'yeyin',n:'野銀冷泉',tag:'必去',r:4.6,rc:1496,d:'天然湧泉與藍海交融，細緻白沙配清涼冷泉，是蘭嶼最療癒的秘境，適合親子戲水。',tip:'水溫約 22°C，沁涼消暑',lat:22.0334,lng:121.5766,url:'https://maps.google.com/?cid=4985308003037042214',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZON7g4fPU2Un_4dwDWq6ryAxs5loble7gfrAPWnoEQ-t9rWx2wqOaHY4D-xmOJu80Ym2iedo7nBXoBgodmIH5Flc9YMYcdWQomHVzFTki56ofuvxOhhxvx-ggNI22gymvGf2U4GnNmo7m0gaQ=s600'},
-  {id:'yy2',t:'yeyin',n:'野銀地下屋',tag:'文化必去',r:4.6,rc:186,d:'達悟族為防颱風建的傳統半地下式建築，台灣世界遺產潛力點，保存最完整的傳統聚落。',tip:'建議參加定點導覽（約 NT$500）',lat:22.0374,lng:121.5677,url:'https://maps.google.com/?cid=14954194464814320621',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMoBWvkpss1psDzA4m4ILjO7zhl3cZzjsH7FwUW4CUz6VHkreg1nK1afoO5wpjdnntT89xnWfF0jfZXA_S_8uha8kb3tXOuiA1GCKqIsI5CGV9wlBVNbBMSfiFZLIEZ_7eQGAT6tF4ZSrFjQw=s600'},
+  {id:'yy1',t:'yeyin',n:'野銀冷泉',tag:'必去',r:4.6,rc:1496,d:'天然湧泉與藍海交融，細緻白沙配清涼冷泉，是蘭嶼最療癒的秘境，適合親子戲水。',tip:'水溫約 22°C，沁涼消暑',lat:22.0333965,lng:121.576601,url:'https://maps.google.com/?cid=4985308003037042214',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZON7g4fPU2Un_4dwDWq6ryAxs5loble7gfrAPWnoEQ-t9rWx2wqOaHY4D-xmOJu80Ym2iedo7nBXoBgodmIH5Flc9YMYcdWQomHVzFTki56ofuvxOhhxvx-ggNI22gymvGf2U4GnNmo7m0gaQ=s600'},
+  {id:'yy2',t:'yeyin',n:'野銀地下屋',tag:'文化必去',r:4.6,rc:186,d:'達悟族為防颱風建的傳統半地下式建築，台灣世界遺產潛力點，保存最完整的傳統聚落。',tip:'建議參加定點導覽（約 NT$500）',lat:22.0373811,lng:121.5676827,url:'https://maps.google.com/?cid=14954194464814320621',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMoBWvkpss1psDzA4m4ILjO7zhl3cZzjsH7FwUW4CUz6VHkreg1nK1afoO5wpjdnntT89xnWfF0jfZXA_S_8uha8kb3tXOuiA1GCKqIsI5CGV9wlBVNbBMSfiFZLIEZ_7eQGAT6tF4ZSrFjQw=s600'},
   // 朗島
-  {id:'ld1',t:'langdao',n:'朗島・拼板舟',tag:'文化',r:4.5,rc:107,d:'六個部落漁場最大，漁港邊停放各色拼板舟，是達悟族海洋文化精髓，旁有文創小舖。',tip:'晨光時拍攝最美',lat:22.0779,lng:121.5295,url:'https://maps.google.com/?cid=17697678833898178957',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPCTjbKs7OfDoS0bCEsxL3EwyfDDKNH1CPO83JJ2Y3JZn1p35ILKZfKDn5X7np6vSzjug_DEDAEPY7s_8iTavTuXOjyoC_MqYjksApF7jxmXW3vrA0Dnue-0ipEgzSXejpKkSlBSkI3pmxdrw=s600'},
-  {id:'ld2',t:'langdao',n:'朗島秘境',tag:'浮潛',r:4.7,rc:734,d:'天然泳池浮潛條件絕佳，清澈海水與奇岩構成，人潮相對較少。',tip:'環島路邊可見入口',lat:22.0812,lng:121.5225,url:'https://maps.google.com/?cid=17173766444739556230',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNNjgYEH6akuy5k0Gl2OOTwQh4xeEiYwlj_J1UcR7C_tuEsu7CoDbyvcXs0V40cDF3UDtM6NPeMaBAtFPPcEHf-F11J105AHNb0fWmgU6xAwPcfQV6uWzo1kr9EzK0oSNmbMrgeV_30o_2Z=s600'},
-  {id:'ld3',t:'langdao',n:'小天池',tag:'健行',r:4.4,rc:47,d:'火山口積水形成的高山湖泊，步行約 20 分鐘，可與大天池串連。',tip:'可與大天池一起走',lat:22.0774,lng:121.5101,url:'https://maps.google.com/?cid=13861725828812076479',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOr47wK-nYxLD_lQmAor146_TUC2CfwFcs5yCVD-Dyjjig0rOB_Di4mFgJPUzRz_totNJx0KHmkSplLrbRCiV8kI8M8PM8TA8AtZHzUHe-sv4BiAlQPDXqoWqzLsPQE42jFuus720b6W8eO=s600'},
+  {id:'ld1',t:'langdao',n:'朗島・拼板舟',tag:'文化',r:4.5,rc:107,d:'六個部落漁場最大，漁港邊停放各色拼板舟，是達悟族海洋文化精髓，旁有文創小舖。',tip:'晨光時拍攝最美',lat:22.0778651,lng:121.5294626,url:'https://maps.google.com/?cid=17697678833898178957',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPCTjbKs7OfDoS0bCEsxL3EwyfDDKNH1CPO83JJ2Y3JZn1p35ILKZfKDn5X7np6vSzjug_DEDAEPY7s_8iTavTuXOjyoC_MqYjksApF7jxmXW3vrA0Dnue-0ipEgzSXejpKkSlBSkI3pmxdrw=s600'},
+  {id:'ld2',t:'langdao',n:'朗島秘境',tag:'浮潛',r:4.7,rc:734,d:'天然泳池浮潛條件絕佳，清澈海水與奇岩構成，人潮相對較少。',tip:'環島路邊可見入口',lat:22.0812279,lng:121.5225243,url:'https://maps.google.com/?cid=17173766444739556230',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNNjgYEH6akuy5k0Gl2OOTwQh4xeEiYwlj_J1UcR7C_tuEsu7CoDbyvcXs0V40cDF3UDtM6NPeMaBAtFPPcEHf-F11J105AHNb0fWmgU6xAwPcfQV6uWzo1kr9EzK0oSNmbMrgeV_30o_2Z=s600'},
+  {id:'ld3',t:'langdao',n:'小天池',tag:'健行',r:4.4,rc:47,d:'火山口積水形成的高山湖泊，步行約 20 分鐘，可與大天池串連。',tip:'可與大天池一起走',lat:22.077429,lng:121.5101488,url:'https://maps.google.com/?cid=13861725828812076479',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOr47wK-nYxLD_lQmAor146_TUC2CfwFcs5yCVD-Dyjjig0rOB_Di4mFgJPUzRz_totNJx0KHmkSplLrbRCiV8kI8M8PM8TA8AtZHzUHe-sv4BiAlQPDXqoWqzLsPQE42jFuus720b6W8eO=s600'},
   // 椰油
-  {id:'yo1',t:'yeyou',n:'開元港',tag:'交通',r:4.3,rc:99,d:'蘭嶼主要進出門戶，後壁湖船班停靠，周邊有租車與補給。',tip:'下船後先加油再出發',lat:22.0584,lng:121.5082,url:'https://maps.google.com/?cid=7457462604908287105',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOO5NiVgA4PdIGr_18Rfu1egjeMlJtBcYtW5cOnVfseCPF3hx-7WRJ26SfArum7PrjCNT0BQ4qZmM2gt7bv51Stn2hWOJRTJBa1uNJdjFYTaemDHAGjSU0V3qdomUSmNbioPh_UVvELerYa-w=s600'},
-  {id:'yo2',t:'yeyou',n:'椰油國小',tag:'必拍',r:null,rc:null,d:'面向太平洋，操場與大海連成一線，拼板舟造型司令台是島上最知名的 IG 打卡點。',tip:'放學後或週末假日開放',lat:22.0454,lng:121.5176,url:'https://maps.google.com/?cid=16657657472315328156',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPhAifFZIApzT0QV4v5qrC9rho-glJm1syTDnF0sH-LPULZrf1O2IjiC5BlIGJR1LbGofKYI7Q-wGkObDjTEhTlrLIIBpFxNNtvswkNOY7il0nBm0Rs4msf4YAqChlYegqVEfX3HCC-6iPN4hU=s600'},
-  {id:'yo3',t:'yeyou',n:'椰油教會',tag:'建築',r:4.7,rc:21,d:'融合達悟族圖騰的特色教堂，彩色玻璃窗描繪飛魚與海洋，展現文化融合之美。',tip:'椰油部落中心',lat:22.0510,lng:121.5127,url:'https://maps.google.com/?cid=6917148205310790439',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMTWyhfZiip-SE7x8vmN1Ag49tUrCOizSJvmudUldJmSD7cnj2mp0cyoBOPQo0xd-4E2RhhHs5L3jFq_fVhDdQNDmG2jC2-yTuMlQhKJqPxK3HTRdZNfoww5nIbV45uvNh1DJ3J9EDPBAD8hw=s600'},
-  {id:'yo4',t:'yeyou',n:'蘭嶼燈塔',tag:'景觀',r:4.4,rc:113,d:'台灣最高燈塔，視野遼闊，可俯瞰椰油灣與太平洋，無法入內但外觀絕佳。',tip:'山路陡，建議停車步行',lat:22.0809,lng:121.5031,url:'https://maps.google.com/?cid=11990456065625356155',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMOVigns-Wz6JPpb5xKae8M7HRGlyOy7HNTMow0uKmxnVhukUNyV0fk2R-wXHQNBDIuqaRD_y-4_nmTQTQIDfm0ihyW4ZLXnBZ4ahSV6rg6bJxsj3C24fMTjMz-zhAtlWnDtaAz75IJdHZGJAw=s600'},
+  {id:'yo1',t:'yeyou',n:'開元港',tag:'交通',r:4.3,rc:99,d:'蘭嶼主要進出門戶，後壁湖船班停靠，周邊有租車與補給。',tip:'下船後先加油再出發',lat:22.0583652,lng:121.5081996,url:'https://maps.google.com/?cid=7457462604908287105',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOO5NiVgA4PdIGr_18Rfu1egjeMlJtBcYtW5cOnVfseCPF3hx-7WRJ26SfArum7PrjCNT0BQ4qZmM2gt7bv51Stn2hWOJRTJBa1uNJdjFYTaemDHAGjSU0V3qdomUSmNbioPh_UVvELerYa-w=s600'},
+  {id:'yo2',t:'yeyou',n:'椰油國小',tag:'必拍',r:null,rc:null,d:'面向太平洋，操場與大海連成一線，拼板舟造型司令台是島上最知名的 IG 打卡點。',tip:'放學後或週末假日開放',lat:22.045381,lng:121.517564,url:'https://maps.google.com/?cid=16657657472315328156',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPhAifFZIApzT0QV4v5qrC9rho-glJm1syTDnF0sH-LPULZrf1O2IjiC5BlIGJR1LbGofKYI7Q-wGkObDjTEhTlrLIIBpFxNNtvswkNOY7il0nBm0Rs4msf4YAqChlYegqVEfX3HCC-6iPN4hU=s600'},
+  {id:'yo3',t:'yeyou',n:'椰油教會',tag:'建築',r:4.7,rc:21,d:'融合達悟族圖騰的特色教堂，彩色玻璃窗描繪飛魚與海洋，展現文化融合之美。',tip:'椰油部落中心',lat:22.0509943,lng:121.5127047,url:'https://maps.google.com/?cid=6917148205310790439',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMTWyhfZiip-SE7x8vmN1Ag49tUrCOizSJvmudUldJmSD7cnj2mp0cyoBOPQo0xd-4E2RhhHs5L3jFq_fVhDdQNDmG2jC2-yTuMlQhKJqPxK3HTRdZNfoww5nIbV45uvNh1DJ3J9EDPBAD8hw=s600'},
+  {id:'yo4',t:'yeyou',n:'蘭嶼燈塔',tag:'景觀',r:4.4,rc:113,d:'台灣最高燈塔，視野遼闊，可俯瞰椰油灣與太平洋，無法入內但外觀及景色絕佳。',tip:'山路陡，建議停車步行',lat:22.0809415,lng:121.5030813,url:'https://maps.google.com/?cid=11990456065625356155',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMOVigns-Wz6JPpb5xKae8M7HRGlyOy7HNTMow0uKmxnVhukUNyV0fk2R-wXHQNBDIuqaRD_y-4_nmTQTQIDfm0ihyW4ZLXnBZ4ahSV6rg6bJxsj3C24fMTjMz-zhAtlWnDtaAz75IJdHZGJAw=s600'},
   // 漁人
-  {id:'yr1',t:'yuren',n:'蘭嶼文物館',tag:'文化',r:4.1,rc:536,d:'收藏達悟族傳統器具、服飾、拼板舟模型，是認識蘭嶼歷史文化最完整的室內場所。',tip:'週一休館，雨天備案首選',lat:22.0260,lng:121.5392,url:'https://maps.google.com/?cid=11964889175122317808',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNc30yd-9N9w_chx35Uot4bRM37V5_mrRbVNqQGY1ApCWzwcPtkBQY0oIyGALqmKQ72H0iyvHXBEE-58qgBSL7MMUqzZM_veWtoRQ_4bXBHF8sK2mXWEzYrm4aEnG9EfQFEWEEFeHjhlGUxiw=s600'},
+  {id:'yr1',t:'yuren',n:'蘭嶼文物館',tag:'文化',r:4.1,rc:536,d:'收藏達悟族傳統器具、服飾、拼板舟模型，是認識蘭嶼歷史文化最完整的室內場所。',tip:'週一休館，雨天備案首選',hours:'週二–日 08:30–12:00 / 13:30–17:00',lat:22.0260251,lng:121.5391624,url:'https://maps.google.com/?cid=11964889175122317808',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZNc30yd-9N9w_chx35Uot4bRM37V5_mrRbVNqQGY1ApCWzwcPtkBQY0oIyGALqmKQ72H0iyvHXBEE-58qgBSL7MMUqzZM_veWtoRQ_4bXBHF8sK2mXWEzYrm4aEnG9EfQFEWEEFeHjhlGUxiw=s600'},
   // 紅頭
-  {id:'ht1',t:'hongtou',n:'青青草原',tag:'必去',r:4.7,rc:1719,d:'俯瞰八代灣與整片太平洋，夕陽時天空燃燒成金橙色，是蘭嶼最浪漫的景緻。',tip:'最佳：傍晚 17:30–19:00',lat:22.0041,lng:121.5710,url:'https://maps.google.com/?cid=1562741712996110462',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOI_3c9cr5vwqRZzPCt5cilmMc7htfWjqELw8h4mxzGMYZMjQohLD43LHINYk7K-N85N_gS6RhUFTDP_ZWPh0NTqPI8e1DzjJ-k8nLVCKnCAZMTYJMXbL-qzbvS3KmCMU-IYxxh8m1k4iWSKV4=s600'},
-  {id:'ht2',t:'hongtou',n:'八代灣',tag:'文化聖地',r:4.5,rc:265,d:'每年飛魚祭首發地點，達悟族最神聖的漁場，灣內停放大量拼板舟，浮潛條件絕佳。',tip:'勿觸碰、拍攝拼板舟',lat:22.0249,lng:121.5532,url:'https://maps.google.com/?cid=7956381831509118947',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM5Qn-3dOSGzokRC_OTcDgyx8bocDg2r2Rx8xd9zLQ6rZBBKwy70x6IB7ibbapJQYGbmvvwPfeEFWyZ8lOyhBdgWf9ot0meZ4d-edkMLaTj3ix25WpmI7gtzLV-8WZi0doSSBUyWUAqI9BODG4=s600'},
-  {id:'ht3',t:'hongtou',n:'大天池',tag:'健行',r:4.6,rc:471,d:'火山口積水形成的神秘高山湖泊，海拔約 548m，步行約 40 分鐘，霧氣繚繞有仙境感。',tip:'建議穿防滑鞋，山路濕滑',lat:22.0209,lng:121.5727,url:'https://maps.google.com/?cid=12252549111322588710',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPU7OkV6iYitdc0Zw7bYqrr7x5UYP0KPgDXrEkkoEzmVxZuHVztybBBzgf1GMpnmtkFBmWVyh74B-bnjctM0vn_F_7r5IUnAQGmf5XMqvaJiuSAWvsaIMi9TlxOsWGvVkAec0U5yvmcxM9t=s600'},
-  {id:'ht4',t:'hongtou',n:'蘭嶼氣象站',tag:'觀景',r:4.8,rc:180,d:'制高點氣象站，視野可達小蘭嶼，是隱藏版觀星與日出好地點。',tip:'停機車在山腳步行上去',lat:22.0372,lng:121.5586,url:'https://maps.google.com/?cid=11421296700053039673',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMkcnTgeCyhHrMiojM0HvqSld9gUX_5HLAMbX4oEO2wwEyZLRxLjB1u0D6A4gJ_1yp3BhwTVU4FuCbvccY3mTGqK96mGAMRVb0CFGQTB1HR1hjdYANJyLKyfIV_KDwrUh13jVgXhWQZxlxsVQ=s600'},
-  {id:'ht5',t:'hongtou',n:'老人岩',tag:'地形',r:4.6,rc:89,d:'礁岩輪廓形似凝望大海的老人側臉，不同光線下各有千秋。',tip:'紅頭南側海岸',lat:22.0036,lng:121.5723,url:'https://maps.google.com/?cid=4511052456031845102',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMKvQoi4OXtDQX3CqYZ19lmQMrSCfaqGBwYvHYRn1pC1Y9w8PkApSzjBFaIvQOVDOHEYCwSHbQ49M5armMMKIgFE-GAyz7XwED5WnjFSeJ3d_W_6l1kMCWQXZAoMusUHvw-_CXr7vQ8v73jAA=s600'},
-  {id:'ht6',t:'hongtou',n:'龍頭岩',tag:'地形',r:4.4,rc:548,d:'形似龍頭昂首的巨大礁岩，蘭嶼南端代表性地標，清晨光影最為迷人。',tip:'環島公路南端',lat:22.0019,lng:121.5884,url:'https://maps.google.com/?cid=17151552898402370986',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZP4b8SoMh_2wbLRnIX7lv5Tsq7Zwm1vwmXdPZl5s7v44KQsNd_dV1yCx61rd7J01t33M6t48Lem-YhZMLn3ECBcD3eWRoiQXHJhHAbVXouKIpLxB5NsPazMu4Ut8mBSY3KWkaLvUTy8NmL9-H0=s600'},
-  // IG打卡
-  {id:'ig1',t:'ig',n:'東清秘境',tag:'IG熱門',r:4.8,rc:320,d:'清澈碧藍天然海池，陽光照射下如寶石般閃耀，游泳浮潛跳水皆宜，婚紗外拍熱點。',tip:'住東清步行即可抵達！',lat:22.0545,lng:121.5698,url:'https://maps.google.com/maps?q=東清秘境+蘭嶼',img:''},
-  {id:'ig2',t:'ig',n:'舊蘭嶼燈塔（小燈塔）',tag:'IG熱門',r:4.5,rc:210,d:'白色小燈塔矗立礁石上，背景是湛藍大海與開元港，怎麼拍都好看，下船即達。',tip:'椰油開元港旁，步行 3 分鐘',lat:22.0612,lng:121.5040,url:'https://maps.google.com/maps?q=舊蘭嶼燈塔',img:''},
-  {id:'ig3',t:'ig',n:'貝殼沙灘',tag:'秘境',r:4.6,rc:98,d:'細緻貝殼碎砂海灘配上壯觀海蝕地形，隱藏在環島公路邊，知道的人才找得到的秘境。',tip:'環島公路旁留意小路入口',lat:22.0720,lng:121.5480,url:'https://maps.google.com/maps?q=蘭嶼貝殼沙灘',img:''},
-  {id:'ig4',t:'ig',n:'蘭嶼旅人・Rover',tag:'網美酒吧',r:4.6,rc:430,d:'紅頭部落網美系海景酒吧餐廳，坐擁無敵太平洋視角，傍晚喝一杯看夕陽，IG必拍。',tip:'傍晚前往，與青青草原可連排',lat:22.0230,lng:121.5510,url:'https://maps.google.com/maps?q=蘭嶼旅人Rover',img:''},
-  // 美食
-  {id:'fd1',t:'food',n:'漂流木餐廳',tag:'飛魚料理',r:4.4,rc:380,d:'島上知名餐廳，必點奶油飛魚卵燉飯、整隻炸飛魚，飲品試試「芋仙芋死」和海鹽咖啡。',tip:'11:00–14:00 / 18:00–21:00，週日休',hours:'11:00–14:00｜18:00–21:00（週日休）',lat:22.0565,lng:121.5660,url:'https://maps.google.com/maps?q=漂流木餐廳+蘭嶼',img:''},
-  {id:'fd2',t:'food',n:'人魚和貓',tag:'簡餐冰沙',r:4.5,rc:290,d:'位於東清，香草雞腿排超人氣，夏日冰沙消暑必喝，還有貓咪陪你用餐。',tip:'11:00–14:30 / 17:30–00:00',hours:'11:00–14:30｜17:30–00:00',lat:22.0572,lng:121.5648,url:'https://maps.google.com/maps?q=人魚和貓+蘭嶼',img:''},
-  {id:'fd3',t:'food',n:'阿力給早餐',tag:'限量飛魚飯糰',r:4.7,rc:215,d:'紅頭部落必吃早餐！每天限量 60 顆蘭嶼飛魚飯糰，一人限購 1 顆，超人氣秒殺。',tip:'需早起排隊，售完為止',hours:'早晨限定，售完即止',lat:22.0158,lng:121.5618,url:'https://maps.google.com/maps?q=阿力給早餐+蘭嶼',img:''},
-  {id:'fd4',t:'food',n:'小七冰店',tag:'海景冰品',r:4.5,rc:178,d:'開元港旁三樓露天座位，視野遼闊，推薦芋頭雪花冰，料多綿密，海景第一排吃冰。',tip:'椰油 7-11 旁樓梯上三樓',hours:'視當日營業為主',lat:22.0588,lng:121.5075,url:'https://maps.google.com/maps?q=小七冰店+蘭嶼',img:''},
-  {id:'fd5',t:'food',n:'262 Bar',tag:'飛魚炒飯',r:4.5,rc:156,d:'野銀部落人氣餐廳酒吧，飛魚炒飯數一數二好吃，氛圍輕鬆，島上少見的特色小吧。',tip:'野銀部落，建議提早到',hours:'依當日公告',lat:22.0355,lng:121.5720,url:'https://maps.google.com/maps?q=262bar+蘭嶼',img:''},
-  {id:'fd6',t:'food',n:'游麵子',tag:'炸雞排',r:4.4,rc:122,d:'不想吃飛魚？試試手掌大炸雞排，外皮香酥肉厚多汁。5–10 月限定有炸飛魚和炸波波蛋。',tip:'淺粉色磁磚民宅，仔細找',hours:'視當日營業為主',lat:22.0490,lng:121.5140,url:'https://maps.google.com/maps?q=游麵子+蘭嶼',img:''},
-  {id:'fd7',t:'food',n:'迦南園',tag:'拼板舟主題',r:4.5,rc:198,d:'外觀兩艘拼板舟造型超吸睛，飛魚滷肉飯、飛魚卵蓋飯，吃飽還可安排文化導覽體驗。',tip:'可搭配文化導覽體驗',hours:'視當日營業為主',lat:22.0235,lng:121.5500,url:'https://maps.google.com/maps?q=迦南園+蘭嶼',img:''},
+  {id:'ht1',t:'hongtou',n:'青青草原',tag:'必去',r:4.7,rc:1719,d:'俯瞰八代灣與整片太平洋，夕陽時天空燃燒成金橙色，是蘭嶼最浪漫的景緻。',tip:'最佳：傍晚 17:30–19:00',lat:22.0041126,lng:121.57102799999998,url:'https://maps.google.com/?cid=1562741712996110462',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZOI_3c9cr5vwqRZzPCt5cilmMc7htfWjqELw8h4mxzGMYZMjQohLD43LHINYk7K-N85N_gS6RhUFTDP_ZWPh0NTqPI8e1DzjJ-k8nLVCKnCAZMTYJMXbL-qzbvS3KmCMU-IYxxh8m1k4iWSKV4=s600'},
+  {id:'ht2',t:'hongtou',n:'八代灣',tag:'文化聖地',r:4.5,rc:265,d:'每年飛魚祭首發地點，達悟族最神聖的漁場，灣內停放大量拼板舟，浮潛條件絕佳。',tip:'勿觸碰、拍攝拼板舟',lat:22.0248666,lng:121.5531596,url:'https://maps.google.com/?cid=7956381831509118947',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZM5Qn-3dOSGzokRC_OTcDgyx8bocDg2r2Rx8xd9zLQ6rZBBKwy70x6IB7ibbapJQYGbmvvwPfeEFWyZ8lOyhBdgWf9ot0meZ4d-edkMLaTj3ix25WpmI7gtzLV-8WZi0doSSBUyWUAqI9BODG4=s600'},
+  {id:'ht3',t:'hongtou',n:'大天池',tag:'健行',r:4.6,rc:471,d:'火山口積水形成的神秘高山湖泊，海拔約 548m，步行約 40 分鐘，霧氣繚繞有仙境感。',tip:'建議穿防滑鞋，山路濕滑',lat:22.020899,lng:121.572711,url:'https://maps.google.com/?cid=12252549111322588710',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZPU7OkV6iYitdc0Zw7bYqrr7x5UYP0KPgDXrEkkoEzmVxZuHVztybBBzgf1GMpnmtkFBmWVyh74B-bnjctM0vn_F_7r5IUnAQGmf5XMqvaJiuSAWvsaIMi9TlxOsWGvVkAec0U5yvmcxM9t=s600'},
+  {id:'ht4',t:'hongtou',n:'蘭嶼氣象站',tag:'觀景',r:4.8,rc:180,d:'制高點氣象站，視野可達小蘭嶼，是隱藏版觀星與日出好地點。',tip:'停機車在山腳步行上去',lat:22.0371572,lng:121.5585787,url:'https://maps.google.com/?cid=11421296700053039673',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMkcnTgeCyhHrMiojM0HvqSld9gUX_5HLAMbX4oEO2wwEyZLRxLjB1u0D6A4gJ_1yp3BhwTVU4FuCbvccY3mTGqK96mGAMRVb0CFGQTB1HR1hjdYANJyLKyfIV_KDwrUh13jVgXhWQZxlxsVQ=s600'},
+  {id:'ht5',t:'hongtou',n:'老人岩',tag:'地形',r:4.6,rc:89,d:'礁岩輪廓形似凝望大海的老人側臉，不同光線下各有千秋。',tip:'紅頭南側海岸',lat:22.0035206,lng:121.5723143,url:'https://maps.google.com/?cid=4511052456031845102',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZMKvQoi4OXtDQX3CqYZ19lmQMrSCfaqGBwYvHYRn1pC1Y9w8PkApSzjBFaIvQOVDOHEYCwSHbQ49M5armMMKIgFE-GAyz7XwED5WnjFSeJ3d_W_6l1kMCWQXZAoMusUHvw-_CXr7vQ8v73jAA=s600'},
+  {id:'ht6',t:'hongtou',n:'龍頭岩',tag:'地形',r:4.4,rc:548,d:'形似龍頭昂首的巨大礁岩，蘭嶼南端代表性地標，清晨光影最為迷人。',tip:'環島公路南端',lat:22.0019335,lng:121.5883589,url:'https://maps.google.com/?cid=17151552898402370986',img:'https://lh3.googleusercontent.com/place-photos/AJRVUZP4b8SoMh_2wbLRnIX7lv5Tsq7Zwm1vwmXdPZl5s7v44KQsNd_dV1yCx61rd7J01t33M6t48Lem-YhZMLn3ECBcD3eWRoiQXHJhHAbVXouKIpLxB5NsPazMu4Ut8mBSY3KWkaLvUTy8NmL9-H0=s600'},
+  // IG打卡 (真實座標)
+  {id:'ig1',t:'ig',n:'東清秘境',tag:'IG熱門',r:4.7,rc:1012,d:'清澈碧藍天然海池，陽光照射下如寶石般閃耀，游泳浮潛跳水皆宜，婚紗外拍熱點。',tip:'住東清步行即可抵達！',lat:22.0602993,lng:121.5693228,url:'https://maps.google.com/?cid=ChIJMfU5iO8IcDQROHdCs6LIP38',img:''},
+  {id:'ig2',t:'ig',n:'舊蘭嶼燈塔（小燈塔）',tag:'IG熱門',r:4.6,rc:299,d:'白色小燈塔矗立礁石上，背景是湛藍大海與開元港，怎麼拍都好看，下船即達。',tip:'椰油開元港旁，步行 3 分鐘',lat:22.0562394,lng:121.5083728,url:'https://maps.google.com/?cid=ChIJ453JH-QOcDQRusepgrrFWAU',img:''},
+  {id:'ig3',t:'ig',n:'蘭嶼旅人・Rover',tag:'網美酒吧',r:4.4,rc:1656,d:'紅頭部落網美系海景酒吧餐廳，坐擁無敵太平洋視角，傍晚喝一杯看夕陽，IG必拍。',tip:'傍晚前往，與青青草原可連排',hours:'10:30–21:30',lat:22.0264619,lng:121.5498499,url:'https://maps.google.com/maps?q=蘭嶼旅人Rover',img:''},
+  // 美食（全部使用 Google Places 真實座標與營業時間）
+  {id:'fd1',t:'food',n:'漂流木餐廳',tag:'飛魚料理',r:4.2,rc:1784,d:'島上最知名餐廳之一，必點奶油飛魚卵燉飯、整隻炸飛魚。飲品試試「芋仙芋死」和海鹽咖啡。',tip:'週二公休，推薦飛魚卵燉飯',hours:'週三–一 11:00–20:30（週二公休）',lat:22.0266072,lng:121.5421175,url:'https://maps.google.com/?cid=ChIJheqNq-EOcDQRgMvRCYyKbmk',img:''},
+  {id:'fd2',t:'food',n:'人魚和貓',tag:'簡餐冰沙',r:4.2,rc:886,d:'東清熱門餐廳，香草雞腿排與米酒奶茶大推，有貓咪陪你用餐，氣氛輕鬆。',tip:'推薦米酒奶茶和雞腿排！',hours:'11:00–14:30 / 17:30–21:00（全年無休）',lat:22.058878,lng:121.566185,url:'https://maps.google.com/?cid=ChIJIYIH8BgJcDQRrP148p8-m7g',img:''},
+  {id:'fd3',t:'food',n:'蘭嶼旅人・Rover',tag:'海景酒吧',r:4.4,rc:1656,d:'紅頭部落無敵海景餐廳酒吧，Panini、雞尾酒都很推，Happy Hour 划算，傍晚必坐海景位。',tip:'下午 5 點後 Happy Hour，早來卡海景位',hours:'10:30–21:30（全年無休）',lat:22.0264619,lng:121.5498499,url:'https://maps.google.com/?cid=ChIJcQJ5wkUJcDQRSoZFBvMCQmw',img:''},
+  {id:'fd4',t:'food',n:'小七冰店',tag:'海景冰品',r:4.5,rc:190,d:'開元港旁三樓露天座位，視野遼闊，推薦芋頭雪花冰，料多綿密，還新推出西式料理晚餐。',tip:'椰油 7-11 旁樓梯上三樓',hours:'視當日公告（建議先查 FB）',lat:22.0591507,lng:121.5092978,url:'https://maps.google.com/?cid=ChIJSWnNb-EOcDQRuI7OXmcLckA',img:''},
+  {id:'fd5',t:'food',n:'東清三十三號',tag:'早餐',r:4.3,rc:1101,d:'東清最人氣早餐店，蛋餅香酥好吃，窗邊座位可看海，趕早來避免排隊。週三公休。',tip:'週三公休，建議 07:00 前到',hours:'週一/二/四–日 06:00–13:30（週三公休）',lat:22.058557,lng:121.566136,url:'https://maps.google.com/?cid=ChIJdzKdouYIcDQR6mkrW9XRNj4',img:''},
+  {id:'fd6',t:'food',n:'迦南園船屋風味餐',tag:'拼板舟主題',r:4.3,rc:152,d:'外觀是兩艘拼板舟超吸睛，飛魚卵炒飯、飛魚卵蓋飯都很好吃，老闆親切，吃飽可安排文化導覽。',tip:'可搭配文化導覽體驗',hours:'11:00–14:00 / 17:00–20:00（全年無休）',lat:22.0802027,lng:121.5268568,url:'https://maps.google.com/?cid=ChIJBwPlySsJcDQR-wzoZwQvqeA',img:''},
+  {id:'fd7',t:'food',n:'KAOZI 酒吧（左手邊）',tag:'宵夜酒吧',r:4.8,rc:211,d:'朗島部落超高評分酒吧，龍果沙拉薯條、海葵尼莫湯是招牌，Mojito 超好喝，老闆熱情。',tip:'週三公休，晚上 5 點後開始',hours:'週一/二/四–日 17:00–23:00（週三公休）',lat:22.0781828,lng:121.5296503,url:'https://maps.google.com/?cid=ChIJhdkHOpUPcDQRs2HW_DoETVM',img:''},
+  {id:'fd8',t:'food',n:'在海邊 Do VanWa',tag:'異國料理',r:4.5,rc:413,d:'法國男老闆與蘭嶼老婆娘經營，玉女岩旁露天餐廳，墨西哥煎餅、飛魚塔可、夜晚派對燈超美。',tip:'11:30 開始，海邊露天氛圍',hours:'11:30–21:00（全年無休）',lat:22.0798454,lng:121.5184896,url:'https://maps.google.com/?cid=ChIJXVq-3acPcDQRwSfVorNPEOw',img:''},
+  {id:'fd9',t:'food',n:'角落 Bais 咖啡館',tag:'咖啡甜點',r:4.8,rc:315,d:'藏在朗島巷弄裡的隱藏版咖啡館，脫鞋入內，咖啡蛋糕水準驚人，是島上最有氛圍的小店。',tip:'需按 FB 查當日營業，13:00 後開',hours:'13:00 後（依 FB 公告為準）',lat:22.0783336,lng:121.5285789,url:'https://maps.google.com/?cid=ChIJ6f8cMzYPcDQRJaNaDI08oiU',img:''},
+  {id:'fd10',t:'food',n:'芯田民宿&芯田冰品製造所',tag:'冰品甜點',r:4.8,rc:342,d:'東清夜市旁的人氣冰店，芋頭牛奶、海燕窩、黑石頭（黑糖+岩鹽）都必試，一球只要 40 元！',tip:'週二公休，一人低消一份甜點',hours:'週三–一 11:00–19:30（週二公休）',lat:22.0579044,lng:121.5653687,url:'https://maps.google.com/?cid=ChIJyxEgg-YIcDQRDUz_sUqc95c',img:''},
+  {id:'fd11',t:'food',n:'島旦巴漢堡',tag:'漢堡麵食',r:4.5,rc:340,d:'東清超人氣小店，漢堡、牛肉麵都好吃，價格親民，適合潛水空檔快速補充能量。',tip:'注意：不定休，先查 FB 確認',hours:'視當日公告（不定休）',lat:22.0579109,lng:121.5647537,url:'https://maps.google.com/?cid=ChIJ8drjZBAJcDQRM3UcnO9xOgY',img:''},
+  {id:'fd12',t:'food',n:'小雨燒烤',tag:'燒烤宵夜',r:5.0,rc:10,d:'椰油部落隱藏燒烤，炭烤吳郭魚、飛魚乾、培根超好吃，配生啤酒，老闆是蘭嶼人超親切。',tip:'傍晚 4:30 後開始，座位少早點去',hours:'16:30–21:30（每日營業）',lat:22.051065,lng:121.5122845,url:'https://maps.google.com/?cid=ChIJLweTIksPcDQR0MnNbqRY3VY',img:''},
+  // 住宿 & 潛水
+  {id:'stay1',t:'stay',n:'🏠 鯊魚家民宿（你的住處）',tag:'住宿',r:4.8,rc:143,d:'你這次入住的民宿！東清部落海景第一排，老闆超熱情，可協助安排活動、導覽與交通。',tip:'抵達告知「鯊魚家住客（新館）」',hours:'Check-in 15:00 / Check-out 11:00',lat:22.057778,lng:121.564781,url:'https://maps.google.com/?cid=ChIJheqNq-EOcDQRnKCo5Oay7WA',img:''},
+  {id:'stay2',t:'stay',n:'🤿 Tec Only 潛水中心',tag:'深潛預約',r:4.1,rc:233,d:'你的蘭嶼深潛預約地點！朗島村 6-2 號，07:30 出發，每天 4 個時段，設備齊全，教練專業。',tip:'你的行程：6/7 07:30–09:30',hours:'07:30–21:00，需提前預約',lat:22.0792433,lng:121.5291356,url:'https://maps.google.com/?cid=ChIJgTG64jcPcDQR0wAURtGu2XA',img:''},
 ];
 
-const CENTERS={all:[22.044,121.547,12],dongqing:[22.068,121.570,14],yeyin:[22.035,121.572,14],langdao:[22.080,121.529,14],yeyou:[22.053,121.513,14],yuren:[22.028,121.536,14],hongtou:[22.017,121.565,14],ig:[22.044,121.547,12],food:[22.044,121.547,12]};
+const CENTERS={all:[22.044,121.547,12],dongqing:[22.068,121.570,14],yeyin:[22.035,121.572,14],langdao:[22.080,121.529,14],yeyou:[22.053,121.513,14],yuren:[22.028,121.536,14],hongtou:[22.017,121.565,14],ig:[22.044,121.547,12],food:[22.044,121.547,12],stay:[22.068,121.547,13]};
+const TRIBE_ORDER=['dongqing','yeyin','langdao','yeyou','yuren','hongtou','ig','food','stay'];
 
-let curTribe='all',curId=null,curMapsUrl='';
+let curTribe='all',curId=null,curUrl='';
 const markers={};
 
-// MAP
 const map=L.map('map',{zoomControl:true,preferCanvas:true}).setView([22.044,121.547],12);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
   maxZoom:19,subdomains:'abcd'
 }).addTo(map);
 
 function makeIcon(t,active){
-  const c=TC[t].color;
-  const s=active?42:30;
-  const isSquare=t==='food'||t==='ig';
-  const em=t==='food'?'🍽':t==='ig'?'📸':'';
-  let shape;
-  if(isSquare){
-    shape=`<rect x="4" y="4" width="32" height="32" rx="8" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/>
-    <text x="20" y="28" text-anchor="middle" font-size="18" fill="white">${em}</text>`;
-  } else {
-    shape=`<circle cx="20" cy="20" r="14" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/>
-    <circle cx="20" cy="20" r="${active?6:4}" fill="white"/>`;
-  }
-  return L.divIcon({
-    html:`<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 40 40">${shape}</svg>`,
-    className:'',iconSize:[s,s],iconAnchor:[s/2,s/2],popupAnchor:[0,-s/2+4]
-  });
+  const c=TC[t].color;const s=active?42:30;
+  const sq=t==='food'||t==='ig'||t==='stay';
+  const em=t==='food'?'🍽':t==='ig'?'📸':t==='stay'?'🏠':'';
+  const shape=sq
+    ?`<rect x="4" y="4" width="32" height="32" rx="8" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><text x="20" y="28" text-anchor="middle" font-size="18">${em}</text>`
+    :`<circle cx="20" cy="20" r="14" fill="${c}" stroke="white" stroke-width="${active?3:2}" opacity="${active?1:.9}"/><circle cx="20" cy="20" r="${active?6:4}" fill="white"/>`;
+  return L.divIcon({html:`<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 40 40">${shape}</svg>`,className:'',iconSize:[s,s],iconAnchor:[s/2,s/2],popupAnchor:[0,-s/2+4]});
 }
 
 SPOTS.forEach(s=>{
@@ -249,83 +222,51 @@ SPOTS.forEach(s=>{
 });
 
 function selectSpot(id,fly=true){
-  // reset prev marker
-  if(curId&&markers[curId]){
-    const prev=SPOTS.find(x=>x.id===curId);
-    if(prev) markers[curId].setIcon(makeIcon(prev.t,false));
-  }
+  if(curId&&markers[curId]){const p=SPOTS.find(x=>x.id===curId);if(p)markers[curId].setIcon(makeIcon(p.t,false));}
   curId=id;
   const s=SPOTS.find(x=>x.id===id);
   markers[id].setIcon(makeIcon(s.t,true));
-  // sync list
   document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
   const li=document.getElementById('li-'+id);
   if(li){li.classList.add('active');li.scrollIntoView({behavior:'smooth',block:'nearest'});}
-  // fly map
-  if(fly){
-    map.flyTo([s.lat,s.lng],15,{animate:true,duration:0.75});
-  }
-  // open detail panel
+  if(fly){map.flyTo([s.lat,s.lng],16,{animate:true,duration:0.75});}
   showDetail(s);
 }
 
 function showDetail(s){
   const c=TC[s.t];
-  // image
-  const imgWrap=document.getElementById('detailImgWrap');
-  if(s.img){
-    imgWrap.innerHTML=`<img class="detail-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=detail-img-ph>${c.emoji}</div>'"><button class="detail-close" onclick="closeDetail()">✕</button>`;
-  } else {
-    imgWrap.innerHTML=`<div class="detail-img-ph" style="background:linear-gradient(135deg,${c.color}33,${c.color}66)">${c.emoji}</div><button class="detail-close" onclick="closeDetail()">✕</button>`;
-  }
-  document.getElementById('detailBadge').textContent=c.emoji+' '+c.name;
-  document.getElementById('detailBadge').style.cssText=`background:${c.bg};color:${c.text}`;
-  document.getElementById('detailName').textContent=s.n;
-  document.getElementById('detailRating').textContent=s.r?`⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）`:'';
-  document.getElementById('detailDesc').textContent=s.d;
-  document.getElementById('detailTip').textContent='💡 '+s.tip;
-  document.getElementById('detailHours').textContent=s.hours?'🕐 '+s.hours:'';
-  const btn=document.getElementById('detailMapsBtn');
-  btn.style.background=c.color;
-  curMapsUrl=s.url;
+  const iw=document.getElementById('dImgWrap');
+  iw.innerHTML=s.img
+    ?`<img class="d-img" src="${s.img}" alt="${s.n}" onerror="this.outerHTML='<div class=d-ph style=background:linear-gradient(135deg,${c.color}44,${c.color}88)>${c.emoji}</div>'"><button class="detail-close" onclick="closeDetail()">✕</button>`
+    :`<div class="d-ph" style="background:linear-gradient(135deg,${c.color}44,${c.color}88)">${c.emoji}</div><button class="detail-close" onclick="closeDetail()">✕</button>`;
+  document.getElementById('dBadge').textContent=c.emoji+' '+c.name;
+  document.getElementById('dBadge').style.cssText=`background:${c.bg};color:${c.text}`;
+  document.getElementById('dName').textContent=s.n;
+  document.getElementById('dRating').textContent=s.r?`⭐ ${s.r}（${s.rc.toLocaleString()} 則評論）`:'';
+  document.getElementById('dDesc').textContent=s.d;
+  document.getElementById('dTip').textContent='💡 '+s.tip;
+  document.getElementById('dHours').textContent=s.hours?'🕐 '+s.hours:'';
+  document.getElementById('dBtn').style.background=c.color;
+  curUrl=s.url;
   document.getElementById('detailPanel').classList.add('open');
 }
 
 function closeDetail(){
   document.getElementById('detailPanel').classList.remove('open');
-  if(curId&&markers[curId]){
-    const s=SPOTS.find(x=>x.id===curId);
-    if(s) markers[curId].setIcon(makeIcon(s.t,false));
-  }
+  if(curId&&markers[curId]){const s=SPOTS.find(x=>x.id===curId);if(s)markers[curId].setIcon(makeIcon(s.t,false));}
   curId=null;
   document.querySelectorAll('.spot-item').forEach(el=>el.classList.remove('active'));
 }
 
-function openMaps(){
-  window.open(curMapsUrl,'_blank');
-}
+function openMaps(){window.open(curUrl,'_blank');}
 
-// TABS
-const TRIBE_ORDER=['dongqing','yeyin','langdao','yeyou','yuren','hongtou','ig','food'];
 document.getElementById('tribeTabs').addEventListener('click',e=>{
-  const tab=e.target.closest('.tribe-tab');
-  if(!tab) return;
-  curTribe=tab.dataset.tribe;
-  closeDetail();
-  document.querySelectorAll('.tribe-tab').forEach(t=>{
-    t.classList.remove('active');
-    t.style.background='';t.style.color='';t.style.borderColor='';
-  });
+  const tab=e.target.closest('.tribe-tab');if(!tab)return;
+  curTribe=tab.dataset.tribe;closeDetail();
+  document.querySelectorAll('.tribe-tab').forEach(t=>{t.classList.remove('active');t.style.cssText='';});
   tab.classList.add('active');
-  if(curTribe!=='all'){
-    tab.style.background=TC[curTribe]?.color||'#555';
-    tab.style.color='#fff';
-    tab.style.borderColor='transparent';
-  }
-  SPOTS.forEach(s=>{
-    if(curTribe==='all'||s.t===curTribe) map.addLayer(markers[s.id]);
-    else map.removeLayer(markers[s.id]);
-  });
+  if(curTribe!=='all'){tab.style.background=TC[curTribe]?.color||'#555';tab.style.color='#fff';tab.style.borderColor='transparent';}
+  SPOTS.forEach(s=>{if(curTribe==='all'||s.t===curTribe)map.addLayer(markers[s.id]);else map.removeLayer(markers[s.id]);});
   const[la,ln,z]=CENTERS[curTribe]||CENTERS.all;
   map.flyTo([la,ln],z,{animate:true,duration:0.65});
   renderList();
@@ -335,32 +276,73 @@ function renderList(){
   const filtered=curTribe==='all'?SPOTS:SPOTS.filter(s=>s.t===curTribe);
   document.getElementById('spotCount').textContent=filtered.length+' 個';
   const el=document.getElementById('spotList');el.innerHTML='';
-  const groups={};
-  filtered.forEach(s=>(groups[s.t]=groups[s.t]||[]).push(s));
+  const groups={};filtered.forEach(s=>(groups[s.t]=groups[s.t]||[]).push(s));
   const order=curTribe==='all'?TRIBE_ORDER:[curTribe];
   order.forEach(tk=>{
-    if(!groups[tk]) return;
+    if(!groups[tk])return;
     if(curTribe==='all'){
-      const sep=document.createElement('div');
-      sep.className='tribe-sep';sep.style.color=TC[tk].color;
-      sep.innerHTML=`<span>${TC[tk].emoji}</span><span>${TC[tk].name}</span>`;
-      el.appendChild(sep);
+      const sep=document.createElement('div');sep.className='tribe-sep';sep.style.color=TC[tk].color;
+      sep.innerHTML=`<span>${TC[tk].emoji}</span><span>${TC[tk].name}</span>`;el.appendChild(sep);
     }
     groups[tk].forEach(s=>{
-      const isSquare=s.t==='food'||s.t==='ig';
-      const item=document.createElement('div');
-      item.className='spot-item'+(curId===s.id?' active':'');
-      item.id='li-'+s.id;
-      item.innerHTML=`<div class="spot-dot${isSquare?' square':''}" style="background:${TC[s.t].color}"></div>
-        <div><div class="spot-name">${s.n}</div>
-        <span class="spot-tag" style="background:${TC[s.t].bg};color:${TC[s.t].text}">${s.tag}</span></div>`;
-      item.onclick=()=>selectSpot(s.id);
-      el.appendChild(item);
+      const sq=s.t==='food'||s.t==='ig';
+      const item=document.createElement('div');item.className='spot-item'+(curId===s.id?' active':'');item.id='li-'+s.id;
+      item.innerHTML=`<div class="sdot${sq?' sq':''}" style="background:${TC[s.t].color}"></div><div><div class="sname">${s.n}</div><span class="stag" style="background:${TC[s.t].bg};color:${TC[s.t].text}">${s.tag}</span></div>`;
+      item.onclick=()=>selectSpot(s.id);el.appendChild(item);
     });
   });
 }
 
 renderList();
+
+// ── GEOLOCATION ──
+let userMarker = null;
+
+function locateMe() {
+  const btn = document.getElementById('locBtn');
+  if (!navigator.geolocation) {
+    alert('此裝置不支援定位功能');
+    return;
+  }
+  btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot" style="background:#aaa"></div></div> 定位中…';
+  btn.classList.add('loading');
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+
+      // Remove old marker
+      if (userMarker) map.removeLayer(userMarker);
+
+      // Custom user icon
+      const icon = L.divIcon({
+        html: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8" fill="#2196F3" stroke="white" stroke-width="2.5"/>
+          <circle cx="12" cy="12" r="3" fill="white"/>
+        </svg>`,
+        className: '', iconSize: [24, 24], iconAnchor: [12, 12]
+      });
+
+      userMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 })
+        .addTo(map)
+        .bindPopup(`<div style="font-size:13px;font-weight:500;padding:4px 6px">📍 你在這裡<br><span style="font-size:11px;color:#888">精確度 ±${Math.round(accuracy)}m</span></div>`, { closeButton: false })
+        .openPopup();
+
+      map.flyTo([lat, lng], 15, { animate: true, duration: 0.9 });
+
+      btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div> 重新定位';
+      btn.classList.remove('loading');
+    },
+    err => {
+      btn.innerHTML = '<div class="loc-dot-wrap"><div class="loc-dot"></div><div class="loc-dot-pulse"></div></div> 顯示我的位置';
+      btn.classList.remove('loading');
+      const msgs = {1:'請允許位置存取權限', 2:'無法取得位置，請檢查網路', 3:'定位逾時，請再試一次'};
+      alert(msgs[err.code] || '定位失敗');
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 </script>
 </body>
 </html>
